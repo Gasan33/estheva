@@ -14,12 +14,12 @@ class CategoriesController extends Controller
     {
         $categories = Categories::with('image')->get();
 
-        if ($request->wantsJson()) {
-            return api()->success(CategoryResource::collection($categories));
+        // if ($request->wantsJson()) {
+        return api()->success(CategoryResource::collection($categories));
 
-        } else {
-            return view('admin.category', ['data' => CategoryResource::collection($categories)]);
-        }
+        // } else {
+        //     return view('admin.category', ['data' => CategoryResource::collection($categories)]);
+        // }
     }
 
 
