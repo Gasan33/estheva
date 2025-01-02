@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CategoryResource;
-use App\Models\Categories;
+use App\Models\Category;
 use App\Services\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -12,7 +12,7 @@ class CategoriesController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Categories::with('image')->get();
+        $categories = Category::with('image')->get();
 
         // if ($request->wantsJson()) {
         return api()->success(CategoryResource::collection($categories));
@@ -26,7 +26,7 @@ class CategoriesController extends Controller
     public function store(Request $request)
     {
 
-        $category = Categories::create([
+        $category = Category::create([
             'name' => $request->name,
             'slug' => $request->name,
             'description' => $request->description,
@@ -41,7 +41,7 @@ class CategoriesController extends Controller
 
     public function show($id)
     {
-        $category = Categories::with('image')->find($id);
+        $category = Category::with('image')->find($id);
         if (!$category) {
             return api()->notFound();
         }
@@ -51,7 +51,7 @@ class CategoriesController extends Controller
     public function update(Request $request, $id)
     {
 
-        $category = Categories::with('image')->find($id);
+        $category = Category::with('image')->find($id);
         if (!$category) {
             return api()->notFound();
         }
@@ -72,7 +72,7 @@ class CategoriesController extends Controller
     public function destroy($id)
     {
 
-        $category = Categories::with('image')->find($id);
+        $category = Category::with('image')->find($id);
 
         // dd($service);
         if ($category !== null) {

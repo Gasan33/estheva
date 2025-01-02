@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class Categories extends Model
+class Category extends Model
 {
     protected $fillable = [
         'name',
@@ -23,12 +23,12 @@ class Categories extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Categories::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(Categories::class);
+        return $this->hasMany(Category::class);
     }
 
     public function image(): MorphOne
