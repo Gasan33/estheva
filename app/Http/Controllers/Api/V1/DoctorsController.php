@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Appointment;
 use App\Models\Doctor;
-use App\Models\services;
 use App\Models\User;
 use App\Services\ApiResponse;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 

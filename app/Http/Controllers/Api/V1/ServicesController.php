@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ServicesResource;
 use App\Models\Doctor;
-use App\Models\services;
+use App\Models\Services;
 use App\Services\ApiResponse;
 use App\Services\TimeSlotService;
 use Carbon\Carbon;
