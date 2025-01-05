@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\RegisterUserRequest;
 use App\Http\Requests\Api\V1\UserAuthRequest;
 use App\Http\Requests\Api\V1\UserLoginRequest;
 use App\Http\Requests\Api\V1\UserRegisterRequest;
@@ -17,35 +18,71 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
 
-    public function login(UserLoginRequest $request)
+    // public function login(UserLoginRequest $request)
+    // {
+    //     $credentials = $request->only('email', 'password');
+    //     $token = Auth::attempt($credentials);
+    //     if (!User::where('email', $request->email)->first()) {
+    //         return api()->notFound("No account found with this email address.");
+
+    //     } elseif (!$token) {
+    //         return api()->unauth();
+    //     } else {
+    //         $user = Auth::user();
+    //         return api()->success(
+    //             [
+    //                 'user' => $user,
+    //                 'authorisation' => [
+    //                     'type' => 'bearer',
+    //                     'token' => $token,
+
+    //                 ]
+    //             ],
+    //             "User Login Successfully"
+    //         );
+    //     }
+    // }
+    public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-        $token = Auth::attempt($credentials);
-        if (!User::where('email', $request->email)->first()) {
-            return api()->notFound("No account found with this email address.");
+        // Validate the request input
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        } elseif (!$token) {
-            return api()->unauth();
-        } else {
-            $user = Auth::user();
-            return api()->success(
-                [
-                    'user' => $user,
-                    'authorisation' => [
-                        'type' => 'bearer',
-                        'token' => $token,
-
-                    ]
-                ],
-                "User Login Successfully"
-            );
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
         }
+
+        // Attempt to verify the credentials and create a token for the user
+        try {
+            if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Could not create token'], 500);
+        }
+
+        $user = Auth::user();
+        return api()->success(
+            [
+                'user' => $user,
+                'authorisation' => [
+                    'type' => 'bearer',
+                    'token' => $token,
+
+                ]
+            ],
+            "User Login Successfully"
+        );
     }
-    public function register(Request $request)
+
+    public function register(RegisterUserRequest $request)
     {
         if (User::where('email', $request->email)->exists()) {
             return api()->validation([
@@ -59,18 +96,36 @@ class AuthController extends Controller
 
             ], );
         }
+        $validatedData = $request->validated();
+        // $validatedData = $request->validate([
+        //     'name' => ['nullable', 'string', 'max:255'],
+        //     'first_name' => ['required', 'string', 'max:255'],
+        //     'last_name' => ['required', 'string', 'max:255'],
+        //     'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+        //     'phone_number' => [
+        //         'required',
+        //         'regex:/^(\+971|971|05)\d{7}$/',
+        //         'unique:users,phone_number',
+        //     ],
+        //     'password' => [
+        //         'required',
+        //         'string',
+        //         'min:6',
+        //         'max:255',
+        //         // 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+        //     ],
+        //     'device_token' => ['nullable', 'string'],
+        // ]);
 
         // Create the user
         $user = User::create([
-            'name' => $request->name != null ? $request->name : $request->first_name . ' ' . $request->last_name,
-            'first_name' => $request->first_name != NULL ? $request->first_name : Str::before($request->name, ' '),
-            'last_name' => $request->last_name != NULL ? $request->last_name : Str::after($request->name, ' '),
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'device_token' => $request->device_token,
-            'password' => Hash::make(
-                $request->password
-            ),
+            'name' => $validatedData['name'] ?? $request->first_name . ' ' . $request->last_name,
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'email' => $validatedData['email'],
+            'phone_number' => preg_replace('/\D/', '', $validatedData['phone_number']),
+            'password' => Hash::make($validatedData['password']),
+            'device_token' => $validatedData['device_token'] ?? null,
         ]);
 
 
@@ -166,6 +221,20 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         return api()->success('logout success');
+    }
+
+
+    public function getAuthenticatedUser()
+    {
+        try {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Token is invalid or expired'], 401);
+        }
+
+        return response()->json(compact('user'));
     }
 
 

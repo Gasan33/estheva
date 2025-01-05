@@ -16,25 +16,34 @@ class Doctor extends Model
         'exp',
         'about',
         'home_based',
-        'day_of_week',
-        'start_time',
-        'end_time',
+        'availability',
+
     ];
 
-    // protected $casts = [
-    //     'start_time' => 'time',
-    //     'end_time' => 'time',
-    // ];
+    protected $casts = [
+        'availability' => 'array',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // public function services()
-    // {
-    //     return $this->belongsToMany(Services::class, 'doctor_services');
-    // }
+
+    public function setAvailabilityAttribute($value)
+    {
+        $this->attributes['availability'] = json_encode($value); // Store as JSON
+    }
+
+    // This will make sure the availability is cast to an array automatically when accessed
+    public function getAvailabilityAttribute($value)
+    {
+        return json_decode($value, true); // Ensure it's an array or you can customize this for specific formatting
+    }
+    public function services()
+    {
+        return $this->belongsToMany(Services::class, 'doctor_service', 'doctor_id', 'service_id');
+    }
 
     public function addresses()
     {

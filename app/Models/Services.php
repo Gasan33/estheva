@@ -21,13 +21,13 @@ class Services extends Model
         'discount_type',
         'service_sale_tag',
         'category_id',
-        'doctor_id',
+        'doctors',
     ];
 
     protected $casts = [
         'images' => 'array',
         'benefits' => 'array',
-        'doctor_id' => 'array',
+        'doctors' => 'array',
     ];
 
     public function category()

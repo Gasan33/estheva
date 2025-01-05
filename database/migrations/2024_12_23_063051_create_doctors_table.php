@@ -20,9 +20,7 @@ return new class extends Migration {
             $table->integer('exp')->nullable();
             $table->text('about')->nullable();
             $table->boolean('home_based')->default(false);
-            $table->enum('day_of_week', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->json('availability')->nullable();
             $table->timestamps();
         });
     }

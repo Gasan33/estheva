@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ServicesResource;
+use App\Models\Availability;
 use App\Models\Doctor;
 use App\Models\Services;
 use App\Services\ApiResponse;
@@ -57,25 +58,33 @@ class ServicesController extends Controller
         $item = Services::create($validatedData);
 
 
-        if (!empty($validatedData['doctor_id'])) {
-            $item->doctors()->sync($validatedData['doctor_id']); // Sync multiple doctor IDs
+
+        if (!empty($request->doctors)) {
+            $item->doctors()->sync($request->doctors);
+            $item->doctors()->attach($request->doctors);
         }
         if ($item->duration != null) {
-            foreach ($request->doctor_id as $doctor_id) {
-                // $doctor_id = $item->doctor_id;
-                $doctor = Doctor::find($doctor_id);
-                if (!$doctor) {
+            foreach ($request->doctors as $doctorId) {
+                $doctoravailabilities = Availability::where('doctor_id', $doctorId)->get();
+                if (!$doctoravailabilities) {
                     $this->error('doctor not found.');
                     return;
                 }
-                $date = Carbon::now()->toDateString();
-                $startTime = $doctor->start_time;
-                $endTime = $doctor->end_time;
-                TimeSlotService::generateSlots($doctor_id, $item->id, $date, $startTime, $endTime, $item->duration);
+                foreach ($doctoravailabilities as $availability) {
+                    $date = Carbon::now()->toDateString();
+                    $startTime = $availability->start_time;
+                    $endTime = $availability->end_time;
+                    TimeSlotService::generateSlots($doctorId, $item->id, $date, $startTime, $endTime, $item->duration);
+                }
             }
         }
-        return api()->created($item, "Service Created Successfully.");
-        // return response()->json($item, 201);
+
+        $service = Services::with(['category', 'doctors', 'reviews'])->findOrFail($item->id);
+        if ($service) {
+            return api()->created($service, "Service Created Successfully.");
+        } else {
+            return api()->notFound('Service Not Found');
+        }
     }
 
     /**
@@ -84,7 +93,11 @@ class ServicesController extends Controller
     public function show($id)
     {
         $item = Services::with(['category', 'doctors', 'reviews'])->findOrFail($id);
-        return response()->json($item);
+        if ($item) {
+            return response()->json($item);
+        } else {
+            return api()->notFound('Service Not Found');
+        }
     }
 
     /**
@@ -120,11 +133,17 @@ class ServicesController extends Controller
 
         $item->update($validatedData);
 
-        if (!empty($validatedData['doctor_id'])) {
-            $item->doctors()->sync($validatedData['doctor_id']); // Sync multiple doctor IDs
+        if (!empty($request->doctors)) {
+            $item->doctors()->sync($request->doctors);
+            $item->doctors()->attach($request->doctors);
         }
 
-        return api()->success($item, "Service Updated Successfully.");
+        $service = Services::with(['category', 'doctors', 'reviews'])->find($item->id);
+        if ($service) {
+            return api()->success($service, "Service Updated Successfully.");
+        } else {
+            return api()->notFound('Service Not Found');
+        }
     }
 
     /**
@@ -132,15 +151,13 @@ class ServicesController extends Controller
      */
     public function destroy($id)
     {
-        $service = Services::with('category')->findOrFail($id);
+        $service = Services::with(['category', 'doctors', 'reviews'])->find($id);
 
         if ($service) {
             $service->delete();
-
-            return api()->success(new ServicesResource($service), 'Service deleted successfully');
+            return api()->success($service, 'Service deleted successfully');
         } else {
-            $notFoundservice = Services::with('category')->findOrFail($id);
-            return api()->notFound(new ServicesResource($notFoundservice), 'Service Not Found');
+            return api()->notFound('Service Not Found');
         }
     }
 

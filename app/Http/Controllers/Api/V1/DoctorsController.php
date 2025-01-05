@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
 use App\Models\Doctor;
 use App\Models\User;
 use App\Services\ApiResponse;
@@ -25,34 +26,24 @@ class DoctorsController extends Controller
      */
     public function store(Request $request)
     {
-        // $validated = $request->validate([
-        //     'user_id' => 'required|exists:users,id',
-        //     'specialty' => 'required|string|max:255',
-        //     'certificate' => 'nullable|string',
-        //     'university' => 'nullable|string',
-        //     'patients' => 'nullable|integer',
-        //     'exp' => 'nullable|integer',
-        //     'about' => 'nullable|string',
-        //     'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-        //     'start_time' => 'required|date_format:H:i',
-        //     'end_time' => 'required|date_format:H:i',
-        // ]);
-        // 'email' => $request->email,
+        if (User::where('email', $request->email)->exists()) {
+            return api()->validation([
+                'message' => 'Email already exists or invalid data.',
 
-        // if (Doctor::where('user_id', $request->user_id)->exists()) {
-        //     return api()->validation([
-        //         'message' => 'Doctor already exists please try again.',
+            ], );
+        }
+        if (User::where('phone_number', $request->phone_number)->exists()) {
+            return api()->validation([
+                'message' => 'Phone number already exists please try again.',
 
-        //     ], );
-        // }
-
+            ], );
+        }
 
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-
             'password' => Hash::make(
                 $request->password
             ),
@@ -64,7 +55,6 @@ class DoctorsController extends Controller
         ]);
 
 
-
         $doctor = Doctor::create([
             'user_id' => $user->id,
             'specialty' => $request->specialty,
@@ -74,10 +64,18 @@ class DoctorsController extends Controller
             'exp' => $request->exp,
             'about' => $request->about,
             'home_based' => $request->home_based,
-            'day_of_week' => $request->day_of_week,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
         ]);
+
+        foreach ($request->availability as $entry) {
+            Availability::create([
+                'doctor_id' => $doctor->id,
+                'day_of_week' => $entry['day'],
+                'start_time' => $entry['start_time'],
+                'end_time' => $entry['end_time'],
+            ]);
+        }
+
+
 
         return api()->success($doctor);
     }
@@ -140,10 +138,16 @@ class DoctorsController extends Controller
             'exp' => $request->exp,
             'about' => $request->about,
             'home_based' => $request->home_based,
-            'day_of_week' => $request->day_of_week,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
+
         ]);
+        foreach ($request->availability as $entry) {
+            $doctor->availability()->update([
+                'doctor_id' => $doctor->id,
+                'day_of_week' => $entry['day'],
+                'start_time' => $entry['start_time'],
+                'end_time' => $entry['end_time'],
+            ]);
+        }
 
         return api()->success($doctor, "Doctor updated successfully.");
 

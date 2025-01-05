@@ -140,7 +140,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 // Route::apiResource('appointments', AppointmentsController::class);
-// Route::apiResource('reviews', ReviewsController::class);
+Route::apiResource('reviews', ReviewsController::class);
 // Route::apiResource('favorites', FavoritesController::class);
 // Route::delete('favorites/remove', [FavoritesController::class, 'destroy']);
 

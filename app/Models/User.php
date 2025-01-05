@@ -78,21 +78,36 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
         return Carbon::parse($this->date_of_birth)->age;
     }
 
-    public function getFormattedPhoneNumberAttribute()
+    public function getPhoneAttribute($value)
     {
+        // Ensure the phone number is formatted as: +971 XX XXX XXXX
+        $formatted = preg_replace('/\D/', '', $value); // Remove non-numeric characters
+        if (strlen($formatted) === 12 && substr($formatted, 0, 3) === '971') {
+            // Format numbers with +971 country code
+            return '+971 ' . substr($formatted, 3, 2) . ' ' . substr($formatted, 5, 3) . ' ' . substr($formatted, 8);
+        } elseif (strlen($formatted) === 9 && substr($formatted, 0, 1) === '5') {
+            // Format numbers without country code as UAE local format
+            return '+971 ' . substr($formatted, 0, 1) . ' ' . substr($formatted, 1, 3) . ' ' . substr($formatted, 4);
+        }
+        return $value; // Return unformatted if it doesn't match
+    }
 
-        $phoneUtil = PhoneNumberUtil::getInstance();
-        $number = $phoneUtil->parse($this->phone_number, 'AE'); // 'AE' is the country code for UAE
+    // Define the mutator for the phone attribute
+    public function setPhoneAttribute($value)
+    {
+        // Normalize the phone number
+        $normalized = preg_replace('/\D/', '', $value); // Remove non-numeric characters
 
-        // Format the phone number in national format
-        $formattedPhone = $phoneUtil->format($number, PhoneNumberFormat::NATIONAL);
-        // Check if the phone number includes the UAE country code (+971)
-        // $phone = $this->phone_number;
-
-        // // Remove the country code (+971) and format the number
-        // $formattedPhone = preg_replace('/\+971(\d{3})(\d{3})(\d{4})/', '$1 $2 $3', $phone);
-
-        return $formattedPhone;
+        if (strlen($normalized) === 12 && substr($normalized, 0, 3) === '971') {
+            // Keep as-is if already includes +971
+            $this->attributes['phone_number'] = $normalized;
+        } elseif (strlen($normalized) === 9 && substr($normalized, 0, 1) === '5') {
+            // Add +971 country code for local numbers
+            $this->attributes['phone_number'] = '971' . $normalized;
+        } else {
+            // Handle invalid phone numbers (optional)
+            $this->attributes['phone_number'] = $normalized; // Save as-is if it doesn't match UAE patterns
+        }
     }
 
     public function getFullNameAttribute()

@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->json('images')->nullable();
-            $table->json('doctor_id')->nullable()->constrained('doctors')->onDelete('cascade');
             $table->boolean('home_based')->default(false);
             $table->string('video')->nullable();
             $table->integer('duration')->default(0);

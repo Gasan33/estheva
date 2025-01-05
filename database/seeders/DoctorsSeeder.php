@@ -33,9 +33,6 @@ class DoctorsSeeder extends Seeder
             'exp' => 12,
             'about' => 'Experienced cardiologist with over 12 years of practice.',
             'home_based' => (bool) rand(0, 1),
-            'day_of_week' => 'Monday',
-            'start_time' => '09:00:00',
-            'end_time' => '17:00:00',
         ]);
 
         // Add dummy addresses
