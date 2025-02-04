@@ -66,7 +66,9 @@ class AuthController extends Controller
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'],
-                'phone_number' => preg_replace('/\D/', '', $validatedData['phone_number']),
+                'phone_number' => preg_replace_callback('/^(0|)?(\d{9})$/', function ($matches) {
+                    return '+971' . $matches[2];
+                }, ltrim($validatedData['phone_number'], '+')),
                 'password' => Hash::make($validatedData['password']),
                 'device_token' => $validatedData['device_token'] ?? null,
             ]);
