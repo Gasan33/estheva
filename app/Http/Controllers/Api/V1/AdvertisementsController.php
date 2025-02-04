@@ -23,7 +23,7 @@ class AdvertisementsController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'ad_title' => 'required|string|max:255',
             'ad_description' => 'required|string',
             'ad_picture' => 'nullable|string',
@@ -52,7 +52,7 @@ class AdvertisementsController extends Controller
         $advertisement = Advertisements::findOrFail($id);
 
         $validatedData = $request->validate([
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'ad_title' => 'required|string|max:255',
             'ad_description' => 'required|string',
             'ad_picture' => 'nullable|string',

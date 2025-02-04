@@ -35,9 +35,4 @@ return [
         ],
     ],
 
-    'infobip' => [
-        'base_url' => env('INFOBIP_API_BASE_URL'),
-        'api_key' => env('INFOBIP_API_KEY'),
-    ],
-
 ];

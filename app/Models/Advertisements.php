@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Advertisements extends Model
 {
     protected $fillable = [
-        'service_id',
+        'treatment_id',
         'ad_title',
         'ad_description',
         'ad_picture',
@@ -15,8 +15,8 @@ class Advertisements extends Model
         'end_date',
     ];
 
-    public function service()
+    public function treatment()
     {
-        return $this->belongsTo(Services::class);
+        return $this->belongsTo(Treatment::class);
     }
 }

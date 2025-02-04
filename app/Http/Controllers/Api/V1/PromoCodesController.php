@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\PromoCodes;
-use App\Models\services;
 use Illuminate\Http\Request;
 
 class PromoCodesController extends Controller
@@ -28,7 +27,7 @@ class PromoCodesController extends Controller
         ]);
     }
 
-    // Apply the promo code to a service or total price
+    // Apply the promo code to a treatment or total price
     public function applyPromoCode(Request $request)
     {
         $promoCode = PromoCodes::where('code', $request->code)->first();

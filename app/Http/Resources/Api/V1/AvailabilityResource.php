@@ -16,10 +16,11 @@ class AvailabilityResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'doctor_id' => $this->doctor_id,
             'day_of_week' => $this->day_of_week,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
-            'doctor' => new DoctorResource($this->whenLoaded('doctor')), // Assuming you have a DoctorResource
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')), // Optionally include the doctor's information if it's loaded
         ];
     }
 }

@@ -19,7 +19,7 @@ class AvailabilityController extends Controller
         $availability = Availability::with('doctor')->get();
 
         // Return the schedules as a resource collection
-        return api()->success($availability);
+        return $this->api()->success($availability);
         // return AvailabilityResource::collection($availability);
     }
 
@@ -95,11 +95,4 @@ class AvailabilityController extends Controller
 }
 
 
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
-    }
-}
 

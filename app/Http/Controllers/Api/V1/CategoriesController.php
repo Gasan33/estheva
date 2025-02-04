@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Models\Category;
-use App\Services\ApiResponse;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -15,7 +14,7 @@ class CategoriesController extends Controller
         $categories = Category::with('image')->get();
 
         // if ($request->wantsJson()) {
-        return api()->success(CategoryResource::collection($categories));
+        return $this->api()->success(CategoryResource::collection($categories));
 
         // } else {
         //     return view('admin.category', ['data' => CategoryResource::collection($categories)]);
@@ -35,7 +34,7 @@ class CategoriesController extends Controller
 
         $getImage = $request->image;
         $category->image()->create(['path' => $getImage]);
-        return api()->created($category, "Category Created Successfully");
+        return $this->api()->created(CategoryResource::collection($category), "Category Created Successfully");
     }
 
 
@@ -43,9 +42,9 @@ class CategoriesController extends Controller
     {
         $category = Category::with('image')->find($id);
         if (!$category) {
-            return api()->notFound();
+            return $this->api()->notFound();
         }
-        return api()->success($category);
+        return $this->api()->success(CategoryResource::collection($category));
     }
 
     public function update(Request $request, $id)
@@ -53,7 +52,7 @@ class CategoriesController extends Controller
 
         $category = Category::with('image')->find($id);
         if (!$category) {
-            return api()->notFound();
+            return $this->api()->notFound();
         }
         $category->update([
             'name' => $request->name,
@@ -66,7 +65,7 @@ class CategoriesController extends Controller
         $category->image()->updatedAt(['path' => $getImage]);
 
 
-        return api()->success($category, "category updated successfully.");
+        return $this->api()->success(CategoryResource::collection($category), "category updated successfully.");
     }
 
     public function destroy($id)
@@ -77,19 +76,11 @@ class CategoriesController extends Controller
         // dd($service);
         if ($category !== null) {
             $category->delete();
-            return api()->success(new CategoryResource($category), 'Category deleted successfully');
+            return $this->api()->success([], 'Category deleted successfully');
         } else {
-            return api()->notFound('Category Not Found');
+            return $this->api()->notFound('Category Not Found');
         }
 
     }
 }
 
-
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
-    }
-}

@@ -15,9 +15,9 @@ class ReviewSeeder extends Seeder
     {
         Review::create([
             'patient_id' => 1,
-            'service_id' => 9,
+            'treatment_id' => 9,
             'rating' => rand(1, 5),
-            'review_text' => "Review for the tested service",
+            'review_text' => "Review for the tested treatment",
         ]);
     }
 }

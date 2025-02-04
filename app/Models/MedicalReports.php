@@ -9,7 +9,7 @@ class MedicalReports extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
-        'service_id',
+        'treatment_id',
         'report_date',
         'report_details',
         'attachments'
@@ -29,8 +29,8 @@ class MedicalReports extends Model
         return $this->belongsTo(Doctor::class);
     }
 
-    public function service()
+    public function treatment()
     {
-        return $this->belongsTo(Services::class);
+        return $this->belongsTo(Treatment::class);
     }
 }

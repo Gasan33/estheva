@@ -5,20 +5,16 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Carbon\Carbon;
-use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Filament\Panel;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use libphonenumber\PhoneNumberUtil;
-use libphonenumber\PhoneNumberFormat;
+use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable implements JWTSubject, FilamentUser
+class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -58,17 +54,15 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
-
 
     protected function profilePictureUrl(): Attribute
     {
         return Attribute::get(function () {
             return $this->profile_picture
-                ? asset('storage/' . $this->profile_picture)
+                ? asset("storage/{$this->profile_picture}")
                 : asset('user-avatar.png'); // Path to your default avatar
         });
     }
@@ -110,10 +104,6 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
         }
     }
 
-    public function getFullNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
-    }
 
     public function lastVerificationCode()
     {
@@ -152,31 +142,5 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
     public function medicalReports()
     {
         return $this->hasMany(MedicalReports::class, 'patient_id');
-    }
-
-
-    // JWT methods
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        if ($panel->getId() === 'admin') {
-            return $this->isAdmin();
-        }
-
-        return true;
     }
 }

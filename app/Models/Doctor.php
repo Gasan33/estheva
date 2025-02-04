@@ -16,12 +16,6 @@ class Doctor extends Model
         'exp',
         'about',
         'home_based',
-        'availability',
-
-    ];
-
-    protected $casts = [
-        'availability' => 'array',
     ];
 
     public function user()
@@ -29,26 +23,16 @@ class Doctor extends Model
         return $this->belongsTo(User::class);
     }
 
-
-    public function setAvailabilityAttribute($value)
+    public function treatments()
     {
-        $this->attributes['availability'] = json_encode($value); // Store as JSON
-    }
-
-    // This will make sure the availability is cast to an array automatically when accessed
-    public function getAvailabilityAttribute($value)
-    {
-        return json_decode($value, true); // Ensure it's an array or you can customize this for specific formatting
-    }
-    public function services()
-    {
-        return $this->belongsToMany(Services::class, 'doctor_service', 'doctor_id', 'service_id');
+        return $this->belongsToMany(Treatment::class, 'doctor_treatments', 'doctor_id', 'treatment_id')->withTimestamps();
     }
 
     public function addresses()
     {
         return $this->morphMany(Addresses::class, 'addressable');
     }
+
     public function scopeDoctors($query)
     {
         return $query->whereHas('user', function ($q) {
@@ -56,7 +40,7 @@ class Doctor extends Model
         });
     }
 
-    public function availability()
+    public function availabilities()
     {
         return $this->hasMany(Availability::class, 'doctor_id');
     }
@@ -65,6 +49,7 @@ class Doctor extends Model
     {
         return $this->hasMany(Appointment::class, 'doctor_id');
     }
+
     public function medicalReports()
     {
         return $this->hasMany(MedicalReports::class, 'doctor_id');

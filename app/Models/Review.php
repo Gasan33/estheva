@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    protected $fillable = ['patient_id', 'doctor_id', 'service_id', 'rating', 'review_text'];
+    protected $fillable = ['patient_id', 'doctor_id', 'treatment_id', 'rating', 'review_text'];
 
     public function patient()
     {
@@ -18,8 +18,8 @@ class Review extends Model
         return $this->belongsTo(Doctor::class, "doctor_id");
     }
 
-    public function service()
+    public function treatment()
     {
-        return $this->belongsTo(Services::class, "service_id");
+        return $this->belongsTo(Treatment::class, "treatment_id");
     }
 }

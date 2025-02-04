@@ -27,7 +27,7 @@ class MessagesController extends Controller
         $messages = Messages::with(['sender', 'receiver'])
             ->where('sender_id', $request->sender_id)
             ->get();
-        return api()->success($messages, );
+        return $this->api()->success($messages, );
     }
     public function senderAndReceiverMessages(Request $request)
     {
@@ -35,7 +35,7 @@ class MessagesController extends Controller
             ->where('sender_id', $request->sender_id)
             ->where('receiver_id', $request->receiver_id)
             ->get();
-        return api()->success($messages, );
+        return $this->api()->success($messages, );
     }
 
     /**
@@ -110,10 +110,3 @@ class MessagesController extends Controller
 }
 
 
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
-    }
-}

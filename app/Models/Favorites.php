@@ -8,7 +8,7 @@ class Favorites extends Model
 {
     protected $fillable = [
         'user_id',
-        'service_id',
+        'treatment_id',
     ];
 
     public function user()
@@ -16,8 +16,8 @@ class Favorites extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function service()
+    public function treatment()
     {
-        return $this->belongsTo(Services::class);
+        return $this->belongsTo(Treatment::class);
     }
 }

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Auth\ForgetPasswordController;
+use App\Http\Controllers\Api\V1\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\V1\Auth\UserController;
 use App\Http\Controllers\Api\V1\AdvertisementsController;
 use App\Http\Controllers\Api\V1\AppointmentsController;
-use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AvailabilityController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\DoctorsController;
@@ -12,26 +15,27 @@ use App\Http\Controllers\Api\V1\MessagesController;
 use App\Http\Controllers\Api\V1\PaymentsController;
 use App\Http\Controllers\Api\V1\PromoCodesController;
 use App\Http\Controllers\Api\V1\ReviewsController;
-use App\Http\Controllers\Api\V1\ServicesController;
+use App\Http\Controllers\Api\V1\TreatmentsController;
 use App\Http\Controllers\Api\V1\TimeSlotsController;
-use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Middleware\IsAdmin;
 use App\Services\AgoraService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:api');
 
 
-Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::post('forgetpassword', [ForgetPasswordController::class, 'forgetPassword']);
+Route::post('resetpassword', [ResetPasswordController::class, 'resetpassword']);
 Route::post('otp/generate', [AuthController::class, 'generateOpt']);
 Route::post('verify', [AuthController::class, 'verify']);
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:api');
+Route::get('user', [UserController::class, 'user'])->middleware('auth:api');
+
 
 
 Route::prefix('categories')->group(function () {
@@ -45,14 +49,14 @@ Route::prefix('categories')->group(function () {
 });
 
 
-Route::prefix('services')->group(function () {
-    Route::get('/', [ServicesController::class, 'index']);
-    Route::get('{id}/discounted-price', [ServicesController::class, 'getDiscountedPrice']);
-    Route::get('{id}', [ServicesController::class, 'show']);
+Route::prefix('treatments')->group(function () {
+    Route::get('/', [TreatmentsController::class, 'index']);
+    Route::get('{id}/discounted-price', [TreatmentsController::class, 'getDiscountedPrice']);
+    Route::get('{id}', [TreatmentsController::class, 'show']);
     Route::middleware([IsAdmin::class])->group(function () {
-        Route::post('/', [ServicesController::class, 'store']);
-        Route::put('{id}', [ServicesController::class, 'update']);
-        Route::delete('{id}', [ServicesController::class, 'destroy']);
+        Route::post('/', [TreatmentsController::class, 'store']);
+        Route::put('{id}', [TreatmentsController::class, 'update']);
+        Route::delete('{id}', [TreatmentsController::class, 'destroy']);
     });
 });
 
@@ -120,6 +124,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::post('/payment', [PaymentsController::class, 'processPayment']);
+    Route::post('/apple-pay-payment', [PaymentsController::class, 'createApplePayPayment']);
 
 
     Route::get('/agora/token', function (Request $request) {

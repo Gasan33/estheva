@@ -16,15 +16,24 @@ class DoctorResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => new UserResource($this->whenLoaded('user')),
+            'user_id' => $this->user_id,
             'specialty' => $this->specialty,
+            'certificate' => $this->certificate,
+            'university' => $this->university,
+            'patients' => $this->patients,
+            'exp' => $this->exp,
+            'about' => $this->about,
+            'home_based' => $this->home_based,
+            'availabilities' => $this->availabilities,
+            'user' => $this->user,
             'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
-            'availability' => AvailabilityResource::collection($this->whenLoaded('availability')),
-            'appointments' => AppointmentResource::collection($this->whenLoaded('appointments')),
+
+            // 'availabilities' => AvailabilityResource::collection($this->whenLoaded('availabilities')),
+            'treatments' => TreatmentsResource::collection($this->whenLoaded('treatments')), // Return a collection of Treatment resources
+            'reviews' => ReviewResource::collection($this->whenLoaded('reviews')), // Return reviews
+            'appointments' => AppointmentResource::collection($this->whenLoaded('appointments')), // Return appointments
             'medical_reports' => MedicalReportResource::collection($this->whenLoaded('medicalReports')),
-            'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+
         ];
     }
 }

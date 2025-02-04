@@ -15,11 +15,11 @@ class ReviewsController extends Controller
      */
     public function index()
     {
-        // Get all reviews, with related patient, doctor, and service
-        $reviews = Review::with(['patient', 'doctor', 'service'])->get();
+        // Get all reviews, with related patient, doctor, and treatment
+        $reviews = Review::with(['patient', 'doctor', 'treatment'])->get();
 
         // Return the collection as a response using the ReviewResource
-        return api()->success($reviews);
+        return $this->api()->success($reviews);
         // return ReviewResource::collection($reviews);
     }
 
@@ -32,12 +32,12 @@ class ReviewsController extends Controller
         $review = Review::create([
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
-            'service_id' => $request->service_id,
+            'treatment_id' => $request->treatment_id,
             'rating' => $request->rating,
             'review_text' => $request->review_text,
 
         ]);
-        return api()->created($review, "Review submited successfully.");
+        return $this->api()->created($review, "Review submited successfully.");
 
     }
 
@@ -47,12 +47,12 @@ class ReviewsController extends Controller
     public function show($id)
     {
         // Find the review by ID, including relationships
-        $review = Review::with(['patient', 'doctor', 'service'])->find($id);
+        $review = Review::with(['patient', 'doctor', 'treatment'])->find($id);
         if (!$review) {
-            return api()->notFound('Review not Found');
+            return $this->api()->notFound('Review not Found');
         }
 
-        return api()->success($review);
+        return $this->api()->success($review);
         // Return the review as a resource
     }
 
@@ -65,7 +65,7 @@ class ReviewsController extends Controller
         $validated = $request->validate([
             'patient_id' => 'sometimes|exists:users,id',
             'doctor_id' => 'sometimes|exists:doctors,id',
-            'service_id' => 'sometimes|exists:services,id',
+            'treatment_id' => 'sometimes|exists:treatments,id',
             'rating' => 'sometimes|integer|between:1,5',
             'review_text' => 'sometimes|string',
         ]);
@@ -73,13 +73,13 @@ class ReviewsController extends Controller
         // Find the review to update
         $review = Review::find($id);
         if (!$review) {
-            return api()->notFound('Review not Found');
+            return $this->api()->notFound('Review not Found');
         }
         // Update the review with validated data
         $review->update($validated);
 
         // Return the updated review as a resource
-        return api()->success($review, "Review Successfully Updated.");
+        return $this->api()->success($review, "Review Successfully Updated.");
     }
 
     /**
@@ -90,7 +90,7 @@ class ReviewsController extends Controller
         // Find the review to delete
         $review = Review::find($id);
         if (!$review) {
-            return api()->notFound('Review not Found');
+            return $this->api()->notFound('Review not Found');
         }
 
         // Delete the review
@@ -98,15 +98,6 @@ class ReviewsController extends Controller
 
         // Return a success message
         return response()->json(['message' => 'Review deleted successfully.']);
-    }
-}
-
-
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
     }
 }
 

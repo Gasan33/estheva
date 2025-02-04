@@ -20,14 +20,14 @@ class DatabaseSeeder extends Seeder
             CategoriesSeeder::class,
             AddressesSeeder::class,
             AddressesSeeder::class,
-            ServicesSeeder::class,
+            TreatmentsSeeder::class,
             ReviewSeeder::class,
             FavoritesSeeder::class,
             AdvertisementsSeeder::class,
             AppointmentSeeder::class,
             MessagesSeeder::class,
             MedicalReportsSeeder::class,
-            DoctorServiceSeeder::class,
+            DoctorTreatmentsSeeder::class,
         ]);
     }
 }

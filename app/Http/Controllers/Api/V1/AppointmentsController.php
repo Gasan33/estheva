@@ -14,17 +14,17 @@ class AppointmentsController extends Controller
      */
     public function index()
     {
-        $appointments = Appointment::with(['user', 'doctor', 'service'])->get();
-        return api()->success($appointments, );
+        $appointments = Appointment::with(['user', 'doctor', 'treatment'])->get();
+        return $this->api()->success($appointments, );
     }
 
 
     public function userAppointments(Request $request)
     {
-        $appointments = Appointment::with(['user', 'doctor', 'service'])
+        $appointments = Appointment::with(['user', 'doctor', 'treatment'])
             ->where('user_id', $request->user_id)
             ->get();
-        return api()->success($appointments, );
+        return $this->api()->success($appointments, );
     }
 
     /**
@@ -35,7 +35,7 @@ class AppointmentsController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
             'status' => 'required|string|max:50',
@@ -43,7 +43,7 @@ class AppointmentsController extends Controller
         ]);
 
         $appointment = Appointment::create($validated);
-        return api()->created($appointment, "Appointment successfully scheduled.");
+        return $this->api()->created($appointment, "Appointment successfully scheduled.");
         // return response()->json($appointment, 201);
     }
 
@@ -52,8 +52,8 @@ class AppointmentsController extends Controller
      */
     public function show($id)
     {
-        $appointment = Appointment::with(['user', 'doctor', 'service'])->findOrFail($id);
-        return api()->success($appointment, );
+        $appointment = Appointment::with(['user', 'doctor', 'treatment'])->findOrFail($id);
+        return $this->api()->success($appointment, );
         // return response()->json($appointment);
     }
 
@@ -65,7 +65,7 @@ class AppointmentsController extends Controller
         $validated = $request->validate([
             'user_id' => 'sometimes|exists:users,id',
             'doctor_id' => 'sometimes|exists:doctors,id',
-            'service_id' => 'sometimes|exists:services,id',
+            'treatment_id' => 'sometimes|exists:treatments,id',
             'appointment_date' => 'sometimes|date',
             'appointment_time' => 'sometimes|date_format:H:i',
             'status' => 'sometimes|string|max:50',
@@ -74,7 +74,7 @@ class AppointmentsController extends Controller
 
         $appointment = Appointment::findOrFail($id);
         $appointment->update($validated);
-        return api()->created($appointment, "Appointment scheduled updated successfully.");
+        return $this->api()->created($appointment, "Appointment scheduled updated successfully.");
         // return response()->json($appointment);
     }
 
@@ -86,7 +86,7 @@ class AppointmentsController extends Controller
         $appointment = Appointment::findOrFail($id);
         $appointment->delete();
 
-        return api()->success($appointment, "Appointment deleted successfully.");
+        return $this->api()->success($appointment, "Appointment deleted successfully.");
 
 
         // return response()->json(['message' => 'Appointment deleted successfully.']);
@@ -94,10 +94,3 @@ class AppointmentsController extends Controller
 }
 
 
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
-    }
-}

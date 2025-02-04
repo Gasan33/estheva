@@ -5,17 +5,14 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
-use Stripe\Charge;
-use Stripe\Token;
+use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
-
 class PaymentsController extends Controller
 {
     public function processPayment(Request $request)
     {
         // Validate token and amount
         $request->validate([
-            'token' => 'required|string',
             'amount' => 'required|numeric|min:0.1',
         ]);
 
@@ -23,16 +20,34 @@ class PaymentsController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            // Create the charge using the token
-            $charge = Charge::create([
+            // Create a PaymentIntent with the amount and currency
+            $paymentIntent = PaymentIntent::create([
                 'amount' => $request->amount * 100,  // Amount in cents
                 'currency' => 'usd',
                 'description' => 'Test Payment',
-                'source' => $request->token,  // Use the token sent from the client
             ]);
 
-            return response()->json(['success' => 'Payment successful!', 'data' => $charge]);
+            return response()->json(['clientSecret' => $paymentIntent->client_secret]);
 
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function createApplePayPayment(Request $request)
+    {
+        $request->validate(['amount' => 'required|numeric|min:0.1']);
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $request->amount * 100,
+                'currency' => 'usd',
+                'payment_method_types' => ['card'],
+            ]);
+
+            return response()->json(['clientSecret' => $paymentIntent->client_secret]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -18,10 +18,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'full_name' => $this->full_name, // Using the accessor you defined
+            'full_name' => $this->name, // Using the accessor you defined
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'is_admin' => $this->isAdmin(), // Calling the isAdmin method
+            'is_admin' => $this->isAdmin(),
+            'is_doctor' => $this->isDoctor(),
             'addresses' => AddressResource::collection($this->addresses), // Assuming you have an AddressResource
             'sent_messages' => MessageResource::collection($this->sentMessages), // Assuming you have a MessageResource
             'received_messages' => MessageResource::collection($this->receivedMessages), // Assuming you have a MessageResource

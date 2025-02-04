@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\MedicalReportResource;
 use App\Models\Doctor;
 use App\Models\MedicalReports;
-use App\Models\services;
+use App\Models\Treatment;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -15,13 +15,13 @@ class MedicalReportsController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-        $reports = MedicalReports::with('patient', 'doctor', 'service')->get();
+        $reports = MedicalReports::with('patient', 'doctor', 'treatment')->get();
         return response()->json($reports);
     }
 
     public function userMedicalReports(Request $request)
     {
-        $reports = MedicalReports::with('patient', 'doctor', 'service')
+        $reports = MedicalReports::with('patient', 'doctor', 'treatment')
             ->where('patient_id', $request->patient_id)
             ->get();
         return response()->json($reports);
@@ -33,12 +33,12 @@ class MedicalReportsController extends Controller
         // You could return a view with form data if you're using Blade views
         $patients = User::where('role', 'patient')->pluck('id', 'name');
         $doctors = Doctor::pluck('id', 'name');
-        $services = services::pluck('id', 'name');
+        $treatments = Treatment::pluck('id', 'name');
 
         return response()->json([
             'patients' => $patients,
             'doctors' => $doctors,
-            'services' => $services,
+            'treatments' => $treatments,
         ]);
     }
 
@@ -48,7 +48,7 @@ class MedicalReportsController extends Controller
         $request->validate([
             'patient_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'report_date' => 'required|date',
             'report_details' => 'required|string',
             'attachments' => 'nullable|array',
@@ -57,7 +57,7 @@ class MedicalReportsController extends Controller
         $report = MedicalReports::create([
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
-            'service_id' => $request->service_id,
+            'treatment_id' => $request->treatment_id,
             'report_date' => $request->report_date,
             'report_details' => $request->report_details,
             'attachments' => json_encode($request->attachments),
@@ -69,7 +69,7 @@ class MedicalReportsController extends Controller
     // Display the specified resource.
     public function show($id)
     {
-        $report = MedicalReports::with('patient', 'doctor', 'service')->findOrFail($id);
+        $report = MedicalReports::with('patient', 'doctor', 'treatment')->findOrFail($id);
         return response()->json($report);
     }
 
@@ -80,13 +80,13 @@ class MedicalReportsController extends Controller
         $report = MedicalReports::findOrFail($id);
         $patients = User::where('role', 'patient')->pluck('id', 'name');
         $doctors = Doctor::pluck('id', 'name');
-        $services = Services::pluck('id', 'name');
+        $treatments = Treatment::pluck('id', 'name');
 
         return response()->json([
             'report' => $report,
             'patients' => $patients,
             'doctors' => $doctors,
-            'services' => $services,
+            'treatments' => $treatments,
         ]);
     }
 
@@ -96,7 +96,7 @@ class MedicalReportsController extends Controller
         $request->validate([
             'patient_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'report_date' => 'required|date',
             'report_details' => 'required|string',
             'attachments' => 'nullable|array',
@@ -106,7 +106,7 @@ class MedicalReportsController extends Controller
         $report->update([
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
-            'service_id' => $request->service_id,
+            'treatment_id' => $request->treatment_id,
             'report_date' => $request->report_date,
             'report_details' => $request->report_details,
             'attachments' => json_encode($request->attachments),

@@ -4,12 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TimeSlotResource;
-use App\Models\Appointment;
-use App\Models\Doctor;
-use App\Models\services;
 use App\Models\TimeSlot;
-use App\Services\ApiResponse;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TimeSlotsController extends Controller
@@ -113,7 +108,7 @@ class TimeSlotsController extends Controller
             ->where('service_id', $validatedData['service_id'])
             ->get();
 
-        return api()->success($appointments);
+        return $this->api()->success($appointments);
 
     }
 
@@ -125,7 +120,7 @@ class TimeSlotsController extends Controller
             'is_available' => 'required|boolean',
         ]);
         if (!$validated) {
-            return api()->validation('Please enter the requred field');
+            return $this->api()->validation('Please enter the requred field');
         }
 
         $timeSlot = TimeSlot::findOrFail($id);
@@ -134,13 +129,6 @@ class TimeSlotsController extends Controller
         $timeSlot->save();
 
 
-        return api()->success($timeSlot, 'Time slot updated successfully.');
-    }
-}
-if (!function_exists('api')) {
-
-    function api()
-    {
-        return new ApiResponse();
+        return $this->api()->success($timeSlot, 'Time slot updated successfully.');
     }
 }

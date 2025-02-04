@@ -16,8 +16,8 @@ class TimeSlotResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'doctor' => new DoctorResource($this->whenLoaded('doctor')), // Assuming you have a DoctorResource
-            'service' => new ServicesResource($this->whenLoaded('service')), // Assuming you have a ServiceResource
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'treatment' => new TreatmentsResource($this->whenLoaded('treatment')),
             'date' => $this->date,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,

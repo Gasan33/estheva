@@ -16,15 +16,15 @@ class AdvertisementsSeeder extends Seeder
     {
         $advertisements = [
             [
-                'service_id' => 1,
+                'treatment_id' => 1,
                 'ad_title' => 'Summer Sale',
-                'ad_description' => 'Get 50% off on all our services this summer!',
+                'ad_description' => 'Get 50% off on all our treatments this summer!',
                 'ad_picture' => 'summer_sale.jpg',
                 'start_date' => '2024-06-01',
                 'end_date' => '2024-06-30',
             ],
             [
-                'service_id' => 2,
+                'treatment_id' => 2,
                 'ad_title' => 'New Year Discount',
                 'ad_description' => 'Celebrate the new year with amazing offers!',
                 'ad_picture' => 'new_year_discount.jpg',
@@ -32,7 +32,7 @@ class AdvertisementsSeeder extends Seeder
                 'end_date' => '2025-01-01',
             ],
             [
-                'service_id' => 3,
+                'treatment_id' => 3,
                 'ad_title' => 'Exclusive Offer',
                 'ad_description' => 'Avail exclusive discounts for a limited time.',
                 'ad_picture' => 'exclusive_offer.jpg',
