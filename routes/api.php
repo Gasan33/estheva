@@ -34,6 +34,7 @@ Route::post('resetpassword', [ResetPasswordController::class, 'resetpassword']);
 Route::post('otp/generate', [AuthController::class, 'generateOpt']);
 Route::post('verify', [AuthController::class, 'verify']);
 Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:api');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 Route::get('user', [UserController::class, 'user'])->middleware('auth:api');
 
 

@@ -89,6 +89,7 @@ class AuthController extends Controller
     }
 
 
+
     public function generateOpt(Request $request)
     {
 
@@ -139,13 +140,30 @@ class AuthController extends Controller
 
         return $this->api()->created($user);
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
+            // Revoke only the current access token
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Logout successful'
+            ], 200);
+        } catch (Exception $exception) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $exception->getMessage()
+            ], 500);
+        }
+    }
+
 }
-
-// if (!function_exists('api')) {
-
-//     function $this->api()
-//     {
-//         return new ApiResponse();
-//     }
-// }
-
