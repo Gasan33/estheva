@@ -152,8 +152,9 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            // Revoke only the current access token
-            $request->user()->currentAccessToken()->delete();
+            // Get the user's current token and revoke it
+            $token = $user->token(); // Correct method for Passport
+            $token->revoke(); // Revoke the token
 
             return response()->json([
                 'message' => 'Logout successful'
