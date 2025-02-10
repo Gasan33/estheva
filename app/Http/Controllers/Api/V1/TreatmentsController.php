@@ -106,4 +106,43 @@ class TreatmentsController extends Controller
             return response()->json(['message' => $exception->getMessage()], 400);
         }
     }
+
+    public function topRated()
+    {
+        try {
+            // Retrieve treatments with their reviews, ensuring we calculate average rating
+            $treatments = Treatment::with(['category', 'doctors', 'reviews'])
+                ->get()
+                ->filter(function ($treatment) {
+                    // Ensure that the treatment has at least one review and calculate the average rating
+                    return $treatment->reviews->isNotEmpty() && $treatment->reviews->avg('rating') !== null;
+                })
+                ->sortByDesc(function ($treatment) {
+                    // Sort treatments by average rating
+                    return $treatment->reviews->avg('rating');
+                });
+
+            // If no treatments were found, return a message indicating no top-rated treatments
+            if ($treatments->isEmpty()) {
+                return response()->json(['message' => 'No top-rated treatments found.'], 404);
+            }
+
+            return $this->api()->success(TreatmentsResource::collection($treatments));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
+
+    public function homeBased()
+    {
+        try {
+            $treatments = Treatment::with(['category', 'doctors', 'timeSlots', 'reviews'])
+                ->where('home_based', true)
+                ->get();
+
+            return $this->api()->success(TreatmentsResource::collection($treatments));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
 }
