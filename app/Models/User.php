@@ -60,13 +60,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function profilePictureUrl(): Attribute
+    public function profilePictureUrl()
     {
-        return Attribute::get(function () {
-            return $this->profile_picture
-                ? asset("storage/{$this->profile_picture}")
-                : asset('user-avatar.png'); // Path to your default avatar
-        });
+        // return Attribute::get(function () {
+        return $this->profile_picture
+            ? asset("storage/{$this->profile_picture}")
+            : asset('user-avatar.png'); // Path to your default avatar
+        // });
     }
 
     public function getAgeAttribute()
