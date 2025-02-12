@@ -29,8 +29,10 @@ class User extends Authenticatable
         'phone_number',
         'password',
         'role',
+        'weight',
         'date_of_birth',
         'gender',
+        'nationality',
         'profile_picture',
         'device_token'
     ];
