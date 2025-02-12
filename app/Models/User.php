@@ -60,7 +60,7 @@ class User extends Authenticatable
         ];
     }
 
-    protected function profilePictureUrl(): Attribute
+    public function profilePictureUrl(): Attribute
     {
         return Attribute::get(function () {
             return $this->profile_picture
