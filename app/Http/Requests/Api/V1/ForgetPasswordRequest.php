@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ForgetPasswordRequest extends FormRequest
 {
@@ -24,5 +26,13 @@ class ForgetPasswordRequest extends FormRequest
         return [
             'email' => 'required',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'error' => 'Validation failed.',
+            'messages' => $validator->errors(),
+        ], 422));
     }
 }

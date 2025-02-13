@@ -3,7 +3,8 @@
 namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 class TreatmentRequest extends FormRequest
 {
     /**
@@ -38,5 +39,13 @@ class TreatmentRequest extends FormRequest
             'treatment_sale_tag' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'error' => 'Validation failed.',
+            'messages' => $validator->errors(),
+        ], 422));
     }
 }

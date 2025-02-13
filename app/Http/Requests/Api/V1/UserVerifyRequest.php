@@ -5,7 +5,8 @@ namespace App\Http\Requests\Api\V1;
 use App\Models\User;
 use App\Models\VerificationCode;
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 class UserVerifyRequest extends FormRequest
 {
     /**
@@ -43,5 +44,13 @@ class UserVerifyRequest extends FormRequest
 
         $verificationCode = VerificationCode::where('otp', $this->otp)->first();
         return User::find($verificationCode->id);
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'error' => 'Validation failed.',
+            'messages' => $validator->errors(),
+        ], 422));
     }
 }

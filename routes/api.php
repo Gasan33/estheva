@@ -77,15 +77,30 @@ Route::prefix('offers')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
-    // Route::middleware([IsAdmin::class])->group(function () {
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::get('/{id}', [UserController::class, 'show']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::put('/{id}', [UserController::class, 'update']);
-        Route::delete('/{id}', [UserController::class, 'destroy']);
+    Route::middleware(['admin', IsAdmin::class])->group(function () {
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::get('/{id}', [UserController::class, 'show']);
+            Route::post('/', [UserController::class, 'store']);
+            Route::put('/{id}', [UserController::class, 'update']);
+            Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
     });
-    // });
+
+    Route::prefix('doctors')->group(function () {
+        Route::get('/', [DoctorsController::class, 'index']);
+        Route::get('/{id}', [DoctorsController::class, 'show']);
+        // Route::middleware(IsAdmin::class)->group(function () {
+        Route::post('/', [DoctorsController::class, 'store']);
+        Route::put('/{id}', [DoctorsController::class, 'update']);
+        Route::delete('/{id}', [DoctorsController::class, 'destroy']);
+        // });
+    });
+
+    // Route::resource('doctors', DoctorsController::class)->middleware([IsAdmin::class]);
+
+
+
 
 
     Route::prefix('appointments')->group(function () {
@@ -162,9 +177,6 @@ Route::post('/promo-code/apply', [PromoCodesController::class, 'applyPromoCode']
 
 // Route::apiResource('timeslots', TimeSlotsController::class);
 // Route::post('timeslots/{id}', [TimeSlotsController::class, 'updateTimeSlotAvailablty']);
-
-Route::resource('doctors', DoctorsController::class);
-
 
 
 
