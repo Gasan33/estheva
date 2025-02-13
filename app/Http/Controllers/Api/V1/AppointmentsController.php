@@ -39,6 +39,7 @@ class AppointmentsController extends Controller
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
             'status' => 'required|string|max:50',
+            'location' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
 
