@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TimeSlotResource;
+use App\Models\Availability;
 use App\Models\TimeSlot;
+use App\Models\Treatment;
+use App\Services\TimeSlotService;
+use Exception;
 use Illuminate\Http\Request;
 
 class TimeSlotsController extends Controller
@@ -14,8 +18,8 @@ class TimeSlotsController extends Controller
      */
     public function index()
     {
-        // Retrieve all availabilities, including the related 'doctor' and 'service' models
-        $timeSlot = TimeSlot::with(['doctor', 'service'])->get();
+        // Retrieve all availabilities, including the related 'doctor' and 'treatment' models
+        $timeSlot = TimeSlot::with(['doctor', 'treatment'])->get();
 
         // Return the availabilities as a resource collection
         return TimeSlotResource::collection($timeSlot);
@@ -29,7 +33,7 @@ class TimeSlotsController extends Controller
         // Validate the incoming request data
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
-            'service_id' => 'required|exists:services,id',
+            'treatment_id' => 'required|exists:treatments,id',
             'date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time', // Ensure end_time is after start_time
@@ -48,8 +52,8 @@ class TimeSlotsController extends Controller
      */
     public function show($id)
     {
-        // Find the availability by ID, including the related 'doctor' and 'service'
-        $timeSlot = TimeSlot::with(['doctor', 'service'])->findOrFail($id);
+        // Find the availability by ID, including the related 'doctor' and 'treatment'
+        $timeSlot = TimeSlot::with(['doctor', 'treatment'])->findOrFail($id);
 
         // Return the availability as a resource
         return new TimeSlotResource($timeSlot);
@@ -63,7 +67,7 @@ class TimeSlotsController extends Controller
         // Validate the incoming request data
         $validated = $request->validate([
             'doctor_id' => 'sometimes|exists:doctors,id',
-            'service_id' => 'sometimes|exists:services,id',
+            'treatment_id' => 'sometimes|exists:treatments,id',
             'date' => 'sometimes|date',
             'start_time' => 'sometimes|date_format:H:i',
             'end_time' => 'sometimes|date_format:H:i|after:start_time', // Ensure end_time is after start_time
@@ -98,17 +102,33 @@ class TimeSlotsController extends Controller
 
     public function getDoctorAvailableSlot(Request $request)
     {
+        try {
+            $treatment = Treatment::with(['doctors', 'timeSlots'])->findOrFail($request->treatment_id);
 
-        $validatedData = $request->validate([
-            'doctor_id' => 'required|integer',
-            'service_id' => 'required|integer',
-        ]);
+            if ($treatment->timeSlots->isEmpty()) {
+                $availabilities = Availability::where('doctor_id', $request->doctor_id)->get();
+                // dd($availabilities);
+                foreach ($availabilities as $availability) {
+                    TimeSlotService::generateSlots(
+                        $request->doctor_id,
+                        $treatment->id,
+                        $request->date,
+                        $availability->start_time,
+                        $availability->end_time,
+                        $treatment->duration
+                    );
+                }
+            }
 
-        $appointments = TimeSlot::where('doctor_id', $validatedData['doctor_id'])
-            ->where('service_id', $validatedData['service_id'])
-            ->get();
+            $timeSlots = TimeSlot::with(['doctor', 'treatment'])
+                ->where('treatment_id', $treatment->id)
+                ->get();
 
-        return $this->api()->success($appointments);
+            return $this->api()->success(TimeSlotResource::collection($timeSlots));
+
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
 
     }
 

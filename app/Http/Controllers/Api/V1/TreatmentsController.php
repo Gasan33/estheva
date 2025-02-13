@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\TreatmentRequest;
+use App\Http\Resources\Api\V1\TimeSlotResource;
 use App\Http\Resources\Api\V1\TreatmentsResource;
 use App\Models\Availability;
+use App\Models\TimeSlot;
 use App\Models\Treatment;
 use App\Services\ApiResponse;
 use App\Services\TimeSlotService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+
+use function PHPUnit\Framework\isEmpty;
 
 class TreatmentsController extends Controller
 {
@@ -57,6 +61,7 @@ class TreatmentsController extends Controller
             return response()->json(['message' => $exception->getMessage()], 400);
         }
     }
+
 
     public function show($id)
     {
