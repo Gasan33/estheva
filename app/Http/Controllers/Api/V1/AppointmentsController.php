@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\TimeSlot;
 use App\Services\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -36,12 +37,16 @@ class AppointmentsController extends Controller
             'user_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
             'treatment_id' => 'required|exists:treatments,id',
+            'time_slot_id' => 'required|exists:timeslots,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
             'status' => 'required|string|max:50',
             'location' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+        $timeSlot = TimeSlot::findOrFail($validated['time_slot_id']);
+        $timeSlot->is_available = false;
+        $timeSlot->save();
 
         $appointment = Appointment::create($validated);
         return $this->api()->created($appointment, "Appointment successfully scheduled.");
