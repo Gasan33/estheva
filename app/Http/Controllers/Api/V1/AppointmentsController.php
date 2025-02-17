@@ -37,7 +37,7 @@ class AppointmentsController extends Controller
             'user_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
             'treatment_id' => 'required|exists:treatments,id',
-            'time_slot_id' => 'required|exists:timeslots,id',
+            'time_slot_id' => 'required|exists:time_slots,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
             'status' => 'required|string|max:50',
