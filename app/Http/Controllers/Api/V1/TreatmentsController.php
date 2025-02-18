@@ -150,4 +150,17 @@ class TreatmentsController extends Controller
             return response()->json(['message' => $exception->getMessage()], 400);
         }
     }
+
+    public function getTreatmentByCategory($category_id)
+    {
+        try {
+            $treatments = Treatment::with(['category', 'doctors', 'timeSlots', 'reviews'])
+                ->where('category_id', $category_id)
+                ->get();
+
+            return $this->api()->success(TreatmentsResource::collection($treatments));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
 }

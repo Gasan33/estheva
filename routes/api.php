@@ -54,6 +54,7 @@ Route::prefix('treatments')->group(function () {
     Route::get('/', [TreatmentsController::class, 'index']);
     Route::get('/top-rated', [TreatmentsController::class, 'topRated']);
     Route::get('/home-treatments', [TreatmentsController::class, 'homeBased']);
+    Route::get('/search/{categoryId}', [TreatmentsController::class, 'getTreatmentByCategory']);
     Route::get('{id}/discounted-price', [TreatmentsController::class, 'getDiscountedPrice']);
     Route::get('{id}', [TreatmentsController::class, 'show']);
     Route::middleware([IsAdmin::class])->group(function () {
