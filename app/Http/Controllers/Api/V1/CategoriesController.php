@@ -34,7 +34,7 @@ class CategoriesController extends Controller
 
         $getImage = $request->image;
         $category->image()->create(['path' => $getImage]);
-        return $this->api()->created(CategoryResource::collection($category), "Category Created Successfully");
+        return $this->api()->created(new CategoryResource($category), "Category Created Successfully");
     }
 
 
