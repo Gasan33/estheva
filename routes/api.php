@@ -189,7 +189,7 @@ Route::prefix('timeslots')->group(function () {
     Route::delete('{id}', [TimeSlotsController::class, 'destroy']);
     Route::post('/update-availablty/{id}', [TimeSlotsController::class, 'updateTimeSlotAvailablty']);
 });
-Route::get('/getDoctorAvailableSlot', [TimeSlotsController::class, 'getDoctorAvailableSlot']);
+Route::post('/getDoctorAvailableSlot', [TimeSlotsController::class, 'getDoctorAvailableSlot']);
 
 
 
