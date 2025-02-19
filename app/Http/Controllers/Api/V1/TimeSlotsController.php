@@ -105,7 +105,7 @@ class TimeSlotsController extends Controller
         try {
             $treatment = Treatment::with(['doctors', 'timeSlots'])->findOrFail($request->treatment_id);
 
-            if ($treatment->timeSlots->isEmpty()) {
+            if ($treatment->timeSlots->where('date', $request->date)->isEmpty()) {
                 $availabilities = Availability::where('doctor_id', $request->doctor_id)->get();
                 // dd($availabilities);
                 foreach ($availabilities as $availability) {
@@ -122,6 +122,8 @@ class TimeSlotsController extends Controller
 
             $timeSlots = TimeSlot::with(['doctor', 'treatment'])
                 ->where('treatment_id', $treatment->id)
+                ->where('doctor_id', $request->doctor_id)
+                ->where('date', $request->date)
                 ->get();
 
             return $this->api()->success(TimeSlotResource::collection($timeSlots));
