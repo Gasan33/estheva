@@ -55,11 +55,15 @@ class AppointmentsController extends Controller
             $validated = $request->validated();
 
             // Ensure time slot is available before booking
-            $timeSlot = TimeSlot::where('id', $validated['time_slot_id'])
-                ->where('is_available', true)
-                ->firstOrFail();
+            // $timeSlot = TimeSlot::where('id', $validated['time_slot_id'])
+            //     ->where('is_available', true)
+            //     ->firstOrFail();
 
-            $timeSlot->update(['is_available' => false]);
+            // $timeSlot->update(['is_available' => false]);
+            $timeSlot = TimeSlot::findOrFail($validated['time_slot_id']);
+            $timeSlot->is_available = false;
+            $timeSlot->save();
+
 
             $appointment = Appointment::create($validated);
 
