@@ -3,100 +3,134 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreAppointmentRequest;
+use App\Http\Requests\Api\V1\UpdateAppointmentRequest;
+use App\Http\Resources\Api\V1\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\TimeSlot;
-use App\Services\ApiResponse;
 use Illuminate\Http\Request;
+use Exception;
 
 class AppointmentsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $appointments = Appointment::with(['user', 'doctor', 'treatment'])->get();
-        return $this->api()->success($appointments, );
+        try {
+            $appointments = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                ->latest()
+                ->get();
+
+            return $this->api()->success(AppointmentResource::collection($appointments));
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Failed to fetch appointments.', 'error' => $exception->getMessage()], 500);
+        }
     }
 
-
+    /**
+     * Get appointments for a specific user.
+     */
     public function userAppointments(Request $request)
     {
-        $appointments = Appointment::with(['user', 'doctor', 'treatment'])
-            ->where('user_id', $request->user_id)
-            ->get();
-        return $this->api()->success($appointments, );
+        try {
+            $appointments = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+                ->where('user_id', $request->user_id)
+                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                ->latest()
+                ->get();
+
+            return $this->api()->success(AppointmentResource::collection($appointments));
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Failed to fetch user appointments.', 'error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created appointment.
      */
-    public function store(Request $request)
+    public function store(StoreAppointmentRequest $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'treatment_id' => 'required|exists:treatments,id',
-            'time_slot_id' => 'required|exists:time_slots,id',
-            'appointment_date' => 'required|date',
-            'appointment_time' => 'required|date_format:H:i',
-            'status' => 'required|string|max:50',
-            'location' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
-        $timeSlot = TimeSlot::findOrFail($validated['time_slot_id']);
-        $timeSlot->is_available = false;
-        $timeSlot->save();
+        try {
+            $validated = $request->validated();
 
-        $appointment = Appointment::create($validated);
-        return $this->api()->created($appointment, "Appointment successfully scheduled.");
-        // return response()->json($appointment, 201);
+            // Ensure time slot is available before booking
+            $timeSlot = TimeSlot::where('id', $validated['time_slot_id'])
+                ->where('is_available', true)
+                ->firstOrFail();
+
+            $timeSlot->update(['is_available' => false]);
+
+            $appointment = Appointment::create($validated);
+
+            return $this->api()->created(new AppointmentResource($appointment), "Appointment successfully scheduled.");
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Failed to schedule appointment.', 'error' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified appointment.
      */
     public function show($id)
     {
-        $appointment = Appointment::with(['user', 'doctor', 'treatment'])->findOrFail($id);
-        return $this->api()->success($appointment, );
-        // return response()->json($appointment);
+        try {
+            $appointment = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                ->findOrFail($id);
+
+            return $this->api()->success(new AppointmentResource($appointment));
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Appointment not found.', 'error' => $exception->getMessage()], 404);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing appointment.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAppointmentRequest $request, $id)
     {
-        $validated = $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
-            'doctor_id' => 'sometimes|exists:doctors,id',
-            'treatment_id' => 'sometimes|exists:treatments,id',
-            'appointment_date' => 'sometimes|date',
-            'appointment_time' => 'sometimes|date_format:H:i',
-            'status' => 'sometimes|string|max:50',
-            'notes' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validated();
+            $appointment = Appointment::findOrFail($id);
 
-        $appointment = Appointment::findOrFail($id);
-        $appointment->update($validated);
-        return $this->api()->created($appointment, "Appointment scheduled updated successfully.");
-        // return response()->json($appointment);
+            // Check if time slot needs to be updated
+            if (isset($validated['time_slot_id'])) {
+                $newTimeSlot = TimeSlot::where('id', $validated['time_slot_id'])
+                    ->where('is_available', true)
+                    ->firstOrFail();
+
+                // Release old time slot
+                TimeSlot::where('id', $appointment->time_slot_id)->update(['is_available' => true]);
+
+                // Assign new time slot
+                $newTimeSlot->update(['is_available' => false]);
+            }
+
+            $appointment->update($validated);
+
+            return $this->api()->success(new AppointmentResource($appointment), "Appointment updated successfully.");
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Failed to update appointment.', 'error' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified appointment.
      */
     public function destroy($id)
     {
-        $appointment = Appointment::findOrFail($id);
-        $appointment->delete();
+        try {
+            $appointment = Appointment::findOrFail($id);
 
-        return $this->api()->success($appointment, "Appointment deleted successfully.");
+            // Release the time slot associated with this appointment
+            TimeSlot::where('id', $appointment->time_slot_id)->update(['is_available' => true]);
 
+            $appointment->delete();
 
-        // return response()->json(['message' => 'Appointment deleted successfully.']);
+            return $this->api()->success([], "Appointment deleted successfully.");
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Failed to delete appointment.', 'error' => $exception->getMessage()], 400);
+        }
     }
 }
-
-
