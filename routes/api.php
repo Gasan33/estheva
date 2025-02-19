@@ -107,7 +107,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('appointments')->group(function () {
         Route::get('/', [AppointmentsController::class, 'index']);
         Route::get('/user-appointments', [AppointmentsController::class, 'userAppointments']);
-        Route::post('/', [AppointmentsController::class, 'store']);
+        Route::post('/store', [AppointmentsController::class, 'store']);
         Route::get('{id}', [AppointmentsController::class, 'show']);
         Route::put('{id}', [AppointmentsController::class, 'update']);
         Route::delete('{id}', [AppointmentsController::class, 'destroy']);
