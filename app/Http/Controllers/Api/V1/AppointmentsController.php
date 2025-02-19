@@ -31,11 +31,11 @@ class AppointmentsController extends Controller
     /**
      * Get appointments for a specific user.
      */
-    public function userAppointments(Request $request)
+    public function userAppointments($user_id)
     {
         try {
             $appointments = Appointment::with(['user', 'doctor', 'treatment'])
-                ->where('user_id', $request->user_id)
+                ->where('user_id', $user_id)
                 // ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
                 // ->latest()
                 ->get();
@@ -55,14 +55,14 @@ class AppointmentsController extends Controller
             $validated = $request->validated();
 
             // Ensure time slot is available before booking
-            // $timeSlot = TimeSlot::where('id', $validated['time_slot_id'])
-            //     ->where('is_available', true)
-            //     ->firstOrFail();
+            $timeSlot = TimeSlot::where('id', $validated['time_slot_id'])
+                ->where('is_available', true)
+                ->firstOrFail();
 
-            // $timeSlot->update(['is_available' => false]);
-            $timeSlot = TimeSlot::findOrFail($validated['time_slot_id']);
-            $timeSlot->is_available = false;
-            $timeSlot->save();
+            $timeSlot->update(['is_available' => false]);
+            // $timeSlot = TimeSlot::findOrFail($validated['time_slot_id']);
+            // $timeSlot->is_available = false;
+            // $timeSlot->save();
 
 
             $appointment = Appointment::create($validated);
