@@ -18,8 +18,8 @@ class AppointmentsController extends Controller
     {
         try {
             $appointments = Appointment::with(['user', 'doctor', 'treatment'])
-                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
-                ->latest()
+                // ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                // ->latest()
                 ->get();
 
             return $this->api()->success(AppointmentResource::collection($appointments));
@@ -36,8 +36,8 @@ class AppointmentsController extends Controller
         try {
             $appointments = Appointment::with(['user', 'doctor', 'treatment'])
                 ->where('user_id', $request->user_id)
-                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
-                ->latest()
+                // ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                // ->latest()
                 ->get();
 
             return $this->api()->success(AppointmentResource::collection($appointments));
@@ -76,7 +76,7 @@ class AppointmentsController extends Controller
     {
         try {
             $appointment = Appointment::with(['user', 'doctor', 'treatment'])
-                ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
+                // ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
                 ->findOrFail($id);
 
             return $this->api()->success(new AppointmentResource($appointment));
