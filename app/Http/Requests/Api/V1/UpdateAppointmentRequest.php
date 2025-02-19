@@ -24,13 +24,13 @@ class UpdateAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id.exists' => 'The selected user does not exist.',
-            'doctor_id.exists' => 'The selected doctor does not exist.',
-            'treatment_id.exists' => 'The selected treatment does not exist.',
-            'appointment_date.date' => 'The appointment date must be a valid date.',
-            'appointment_time.date_format' => 'The appointment time format must be HH:MM.',
-            'status.string' => 'The status must be a string.',
-            'status.max' => 'The status must not exceed 50 characters.',
+            'user_id' => 'sometimes|exists:users,id',
+            'doctor_id' => 'sometimes|exists:doctors,id',
+            'treatment_id' => 'sometimes|exists:treatments,id',
+            'appointment_date' => 'sometimes|date',
+            'appointment_time' => 'sometimes|date_format:H:i',
+            'status' => 'sometimes|string|max:50',
+            'notes' => 'nullable|string',
         ];
     }
     protected function failedValidation(Validator $validator)

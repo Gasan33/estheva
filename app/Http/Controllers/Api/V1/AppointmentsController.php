@@ -17,7 +17,7 @@ class AppointmentsController extends Controller
     public function index()
     {
         try {
-            $appointments = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+            $appointments = Appointment::with(['user', 'doctor', 'treatment'])
                 ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
                 ->latest()
                 ->get();
@@ -34,7 +34,7 @@ class AppointmentsController extends Controller
     public function userAppointments(Request $request)
     {
         try {
-            $appointments = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+            $appointments = Appointment::with(['user', 'doctor', 'treatment'])
                 ->where('user_id', $request->user_id)
                 ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
                 ->latest()
@@ -75,7 +75,7 @@ class AppointmentsController extends Controller
     public function show($id)
     {
         try {
-            $appointment = Appointment::with(['user:id,name,email', 'doctor:id,name,specialization', 'treatment:id,name'])
+            $appointment = Appointment::with(['user', 'doctor', 'treatment'])
                 ->select(['id', 'user_id', 'doctor_id', 'treatment_id', 'appointment_date', 'appointment_time', 'status'])
                 ->findOrFail($id);
 
