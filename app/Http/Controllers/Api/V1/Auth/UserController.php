@@ -120,26 +120,15 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+
+        // Delete the profile picture if it exists
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
         $user->delete();
 
         return $this->api()->success([], 'User deleted successfully.');
     }
 
-    /**
-     * Get the full name of the user.
-     */
-    public function getFullName($id)
-    {
-        $user = User::findOrFail($id);
-        return $this->api()->success(['full_name' => $user->full_name]);
-    }
-
-    /**
-     * Check if the user is an admin.
-     */
-    public function isAdmin($id)
-    {
-        $user = User::findOrFail($id);
-        return $this->api()->success(['is_admin' => $user->isAdmin()]);
-    }
 }

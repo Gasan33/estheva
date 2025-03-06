@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Auth\UserController;
 use App\Http\Controllers\Api\V1\AdvertisementsController;
 use App\Http\Controllers\Api\V1\AppointmentsController;
 use App\Http\Controllers\Api\V1\AvailabilityController;
+use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\DoctorsController;
 use App\Http\Controllers\Api\V1\FavoritesController;
@@ -72,6 +73,7 @@ Route::prefix('offers')->group(function () {
     Route::delete('{id}', [AdvertisementsController::class, 'destroy']);
 });
 
+Route::apiResource('blogs', BlogController::class);
 
 
 

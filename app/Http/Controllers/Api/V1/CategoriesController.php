@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 class CategoriesController extends Controller
 {
     public function index(Request $request)
@@ -27,7 +27,7 @@ class CategoriesController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-            'slug' => $request->name,
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
             'visibility' => true,
         ]);
@@ -56,7 +56,7 @@ class CategoriesController extends Controller
         }
         $category->update([
             'name' => $request->name,
-            'slug' => $request->name,
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
             'visibility' => true,
         ]);
