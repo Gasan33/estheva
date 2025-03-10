@@ -22,7 +22,7 @@ class BlogResource extends JsonResource
             'content' => $this->content,
             'image' => $this->image,
             'user_id' => $this->user_id,
-            'user' => new UserResource($this->whenLoaded('user')),
+            'user' => $this->user,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];
