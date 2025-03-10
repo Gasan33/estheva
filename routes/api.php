@@ -83,7 +83,17 @@ Route::prefix('offers')->group(function () {
     Route::delete('{id}', [AdvertisementsController::class, 'destroy']);
 });
 
-Route::apiResource('blogs', BlogController::class);
+
+Route::prefix('blogs')->group(function () {
+    Route::get('/', [BlogController::class, 'index']);
+    Route::get('{id}', [BlogController::class, 'show']);
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::post('/', [BlogController::class, 'store']);
+        Route::put('{id}', [BlogController::class, 'update']);
+        Route::delete('{id}', [BlogController::class, 'destroy']);
+    });
+});
+
 
 
 
