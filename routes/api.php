@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\PromoCodesController;
 use App\Http\Controllers\Api\V1\ReviewsController;
 use App\Http\Controllers\Api\V1\TreatmentsController;
 use App\Http\Controllers\Api\V1\TimeSlotsController;
+use App\Http\Controllers\FaqController;
 use App\Http\Middleware\IsAdmin;
 use App\Services\AgoraService;
 use Illuminate\Http\Request;
@@ -49,7 +50,15 @@ Route::prefix('categories')->group(function () {
         Route::delete('{id}', [CategoriesController::class, 'destroy']);
     });
 });
-
+Route::prefix('faqs')->group(function () {
+    Route::get('/', [FaqController::class, 'index']);
+    Route::get('{id}', [FaqController::class, 'show']);
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::post('/', [FaqController::class, 'store']);
+        Route::put('{id}', [FaqController::class, 'update']);
+        Route::delete('{id}', [FaqController::class, 'destroy']);
+    });
+});
 
 Route::prefix('treatments')->group(function () {
     Route::get('/', [TreatmentsController::class, 'index']);
