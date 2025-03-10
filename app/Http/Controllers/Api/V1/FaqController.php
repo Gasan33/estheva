@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\FaqResource;
 use App\Models\Faq;
 use Illuminate\Http\Request;
@@ -11,12 +12,12 @@ class FaqController extends Controller
 {
     public function index()
     {
-        return FaqResource::collection(Faq::where('is_active', true)->orderBy('order')->get());
+        return $this->api()->success(FaqResource::collection(Faq::where('is_active', true)->orderBy('order')->get()));
     }
 
     public function show(Faq $faq)
     {
-        return new FaqResource($faq);
+        return $this->api()->success(new FaqResource($faq));
     }
 
     public function store(Request $request)
@@ -33,7 +34,7 @@ class FaqController extends Controller
 
         $faq = Faq::create($validated);
 
-        return new FaqResource($faq);
+        return $this->api()->created(new FaqResource($faq), "Faq Created Successfully");
     }
 
     public function update(Request $request, Faq $faq)
@@ -52,13 +53,13 @@ class FaqController extends Controller
 
         $faq->update($validated);
 
-        return new FaqResource($faq);
+        return $this->api()->success(new FaqResource($faq), "Faq Updated Successfully");
     }
 
     public function destroy(Faq $faq)
     {
         $faq->delete();
 
-        return response()->json(['message' => 'FAQ deleted successfully'], 200);
+        return $this->api()->success(['message' => 'FAQ deleted successfully'], 200);
     }
 }

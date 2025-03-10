@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\AvailabilityController;
 use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\DoctorsController;
+use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\FavoritesController;
 use App\Http\Controllers\Api\V1\MedicalReportsController;
 use App\Http\Controllers\Api\V1\MessagesController;
@@ -18,7 +19,7 @@ use App\Http\Controllers\Api\V1\PromoCodesController;
 use App\Http\Controllers\Api\V1\ReviewsController;
 use App\Http\Controllers\Api\V1\TreatmentsController;
 use App\Http\Controllers\Api\V1\TimeSlotsController;
-use App\Http\Controllers\FaqController;
+
 use App\Http\Middleware\IsAdmin;
 use App\Services\AgoraService;
 use Illuminate\Http\Request;
