@@ -11,14 +11,26 @@ use Exception;
 use Illuminate\Support\Str;
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
-            return $this->api()->success(BlogResource::collection(Blog::latest()->paginate(10)));
+            $perPage = 10; // Or set this to a dynamic value
+            $blogs = Blog::latest()->paginate($perPage);
+
+            return $this->api()->success([
+                'data' => BlogResource::collection($blogs),
+                'pagination' => [
+                    'current_page' => $blogs->currentPage(),
+                    'last_page' => $blogs->lastPage(),
+                    'per_page' => $perPage,
+                    'total' => $blogs->total(),
+                ]
+            ]);
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
     }
+
 
     public function store(BlogRequest $request)
     {
