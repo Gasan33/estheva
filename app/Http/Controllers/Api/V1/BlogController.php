@@ -21,9 +21,7 @@ class BlogController extends Controller
                 'data' => BlogResource::collection($blogs),
                 'pagination' => [
                     'current_page' => $blogs->currentPage(),
-                    'last_page' => $blogs->lastPage(),
-                    'per_page' => $perPage,
-                    'total' => $blogs->total(),
+                    'next_page_url' => $blogs->nextPageUrl(),
                 ]
             ]);
         } catch (Exception $exception) {
