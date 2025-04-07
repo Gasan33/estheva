@@ -28,11 +28,6 @@ class DoctorsController extends Controller
     public function store(StoreDoctorRequest $request)
     {
         try {
-            $profilePicturePath = null;
-
-            if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-            }
             // Create User
             $user = User::create([
                 'name' => $request->name ?? $request->first_name . ' ' . $request->last_name,
@@ -44,7 +39,7 @@ class DoctorsController extends Controller
                 'role' => 'doctor',
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
-                'profile_picture' => $profilePicturePath,
+                'profile_picture' => $request->profile_picture,
                 'device_token' => $request->device_token,
             ]);
 

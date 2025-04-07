@@ -30,7 +30,7 @@ class StoreDoctorRequest extends FormRequest
             'password' => 'required|string|min:8',
             'gender' => 'required|string',
             'date_of_birth' => 'required|date',
-            'profile_picture' => 'nullable|image',
+            'profile_picture' => 'nullable|string',
             'device_token' => 'nullable|string',
             'specialty' => 'required|string',
             'certificate' => 'nullable|string',

@@ -89,7 +89,7 @@ class UserController extends Controller
             'role' => 'nullable|in:patient,doctor,admin',
             'gender' => 'nullable|in:male,female',
             'date_of_birth' => 'nullable|date',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'profile_picture' => 'nullable|string',
             'device_token' => 'nullable|string',
         ]);
 
