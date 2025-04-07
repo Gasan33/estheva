@@ -39,8 +39,7 @@ Route::post('verify', [AuthController::class, 'verify']);
 Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:api');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 Route::get('user', [UserController::class, 'user'])->middleware('auth:api');
-Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic']);
-
+Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic'])->middleware('auth:api');
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoriesController::class, 'index']);
