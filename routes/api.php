@@ -117,6 +117,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/', [DoctorsController::class, 'store']);
             Route::put('/{id}', [DoctorsController::class, 'update']);
             Route::delete('/{id}', [DoctorsController::class, 'destroy']);
+            Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic']);
         });
     });
 

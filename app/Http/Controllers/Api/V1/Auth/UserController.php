@@ -131,4 +131,26 @@ class UserController extends Controller
         return $this->api()->success([], 'User deleted successfully.');
     }
 
+
+    public function uploadProfilePic(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return response()->json(['error' => 'No file uploaded'], 400);
+        }
+
+        $file = $request->file('file');
+
+        // Optional: validate file type and size
+        $request->validate([
+            'file' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Store in public disk (storage/app/public/uploads)
+        $path = $file->store('uploads', 'public');
+
+        return response()->json([
+            'message' => 'File uploaded successfully',
+            'path' => '/storage/' . $path,
+        ]);
+    }
 }
