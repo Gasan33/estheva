@@ -43,14 +43,14 @@ class UserController extends Controller
                 'role' => 'required|in:patient,doctor,admin',
                 'gender' => 'required|in:male,female',
                 'date_of_birth' => 'nullable|date',
-                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'profile_picture' => 'nullable|string',
                 'device_token' => 'nullable|string',
             ]);
 
-            if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-                $validated['profile_picture'] = $profilePicturePath;
-            }
+            // if ($request->hasFile('profile_picture')) {
+            //     $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            //     $validated['profile_picture'] = $profilePicturePath;
+            // }
 
             $validated['password'] = Hash::make($validated['password']);
 
@@ -146,7 +146,7 @@ class UserController extends Controller
         ]);
 
         // Store in public disk (storage/app/public/uploads)
-        $path = $file->store('uploads', 'public');
+        $path = $file->store('profile_pictures', 'public');
 
         return response()->json([
             'message' => 'File uploaded successfully',
