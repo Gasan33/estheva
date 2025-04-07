@@ -39,7 +39,7 @@ Route::post('verify', [AuthController::class, 'verify']);
 Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:api');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 Route::get('user', [UserController::class, 'user'])->middleware('auth:api');
-
+Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic']);
 
 
 Route::prefix('categories')->group(function () {
@@ -117,7 +117,6 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/', [DoctorsController::class, 'store']);
             Route::put('/{id}', [DoctorsController::class, 'update']);
             Route::delete('/{id}', [DoctorsController::class, 'destroy']);
-            Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic']);
         });
     });
 
