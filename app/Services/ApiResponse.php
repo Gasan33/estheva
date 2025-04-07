@@ -28,7 +28,7 @@ class ApiResponse
         return $this->response([], $message, $code);
     }
 
-    public function validation($message = 'validation error')
+    public function validation($data = [], $message = 'validation error')
     {
         return $this->response([], $message, 422);
     }

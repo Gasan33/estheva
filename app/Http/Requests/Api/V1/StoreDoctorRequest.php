@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Services\ApiResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
@@ -48,9 +49,15 @@ class StoreDoctorRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        throw new ValidationException($validator, response()->json([
-            'error' => 'Validation failed.',
-            'messages' => $validator->errors(),
-        ], 422));
+        throw new ValidationException(
+            $validator,
+            new ApiResponse()->validation(
+                [$validator->errors()],
+            ),
+            // response()->json([
+            //     'error' => 'Validation failed.',
+            //     'messages' => $validator->errors(),
+            // ], 422)
+        );
     }
 }
