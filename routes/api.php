@@ -60,6 +60,12 @@ Route::prefix('faqs')->group(function () {
     });
 });
 
+Route::prefix('payments')->group(function () {
+    Route::post('/process', [PaymentsController::class, 'processPayment']);
+    Route::post('/apple-pay', [PaymentsController::class, 'createApplePayPayment']);
+    Route::post('/update-status', [PaymentsController::class, 'updatePaymentStatus']);
+});
+
 Route::prefix('treatments')->group(function () {
     Route::get('/', [TreatmentsController::class, 'index']);
     Route::get('/top-rated', [TreatmentsController::class, 'topRated']);
