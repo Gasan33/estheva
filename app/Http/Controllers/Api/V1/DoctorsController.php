@@ -28,6 +28,8 @@ class DoctorsController extends Controller
     public function store(StoreDoctorRequest $request)
     {
         try {
+            $profilePicturePath = null;
+
             if ($request->hasFile('profile_picture')) {
                 $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
             }
