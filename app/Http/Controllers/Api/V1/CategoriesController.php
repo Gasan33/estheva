@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Models\Category;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 class CategoriesController extends Controller
@@ -40,11 +41,12 @@ class CategoriesController extends Controller
 
     public function show($id)
     {
-        $category = Category::with('image')->find($id);
-        if (!$category) {
-            return $this->api()->notFound();
+        try {
+            $category = Category::with('image')->find($id);
+            return $this->api()->success(new CategoryResource($category));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
         }
-        return $this->api()->success(CategoryResource::collection($category));
     }
 
     public function update(Request $request, $id)
