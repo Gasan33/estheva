@@ -145,10 +145,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('favorites')->group(function () {
         Route::get('/', [FavoritesController::class, 'index']);
         Route::post('/', [FavoritesController::class, 'store']);
-        Route::get('{id}', [FavoritesController::class, 'show']);
-        Route::put('{id}', [FavoritesController::class, 'update']);
-        Route::delete('/remove', [FavoritesController::class, 'destroy']);
-        // Route::delete('{id}', [FavoritesController::class, 'destroy']);
+        Route::delete('/', [FavoritesController::class, 'destroy']);
+        Route::get('/check', [FavoritesController::class, 'isFavorited']);
     });
 
     Route::prefix('messages')->group(function () {

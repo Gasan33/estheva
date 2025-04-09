@@ -4,72 +4,127 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Favorites;
+use Exception;
 use Illuminate\Http\Request;
 
 class FavoritesController extends Controller
 {
     /**
-     * Display a listing of the user services.
+     * Display a listing of the user's favorite treatments.
      */
     public function index(Request $request)
     {
-        $favorites = Favorites::with(['treatment'])
-            ->where('user_id', $request->user_id)
-            ->get();
-        return response()->json($favorites);
+        try {
+            $favorites = Favorites::with(['treatment'])
+                ->where('user_id', $request->user_id)
+                ->get();
+
+            return $this->api()->success($favorites);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Store a newly created user treatment in storage.
+     * Store a newly created favorite treatment.
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'treatment_id' => 'required|exists:treatments,id',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'treatment_id' => 'required|exists:treatments,id',
+            ]);
 
-        $favorites = Favorites::create($validatedData);
+            // Prevent duplicate favorites
+            $existing = Favorites::where('user_id', $validatedData['user_id'])
+                ->where('treatment_id', $validatedData['treatment_id'])
+                ->first();
 
-        return response()->json(['message' => 'User treatment created successfully!', 'data' => $favorites], 201);
+            if ($existing) {
+                return $this->api()->success($existing, "Already in favorites.");
+            }
+
+            $favorite = Favorites::create($validatedData);
+
+            return $this->api()->created($favorite, "Treatment added to favorites.");
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Display the specified user treatment.
+     * Display a specific favorite.
      */
     public function show($id)
     {
-        $favorites = Favorites::with(['user', 'treatment'])->findOrFail($id);
-        return response()->json($favorites);
+        try {
+            $favorite = Favorites::with(['user', 'treatment'])->findOrFail($id);
+
+            return $this->api()->success($favorite);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Update the specified user treatment in storage.
+     * Update a favorite record.
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
-            'treatment_id' => 'sometimes|exists:treatments,id',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'user_id' => 'sometimes|exists:users,id',
+                'treatment_id' => 'sometimes|exists:treatments,id',
+            ]);
 
-        $favorites = Favorites::findOrFail($id);
-        $favorites->update($validatedData);
+            $favorite = Favorites::findOrFail($id);
+            $favorite->update($validatedData);
 
-        return response()->json(['message' => 'User treatment updated successfully!', 'data' => $favorites]);
+            return $this->api()->success($favorite, 'Favorite updated successfully.');
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
     }
 
     /**
-     * Remove the specified user treatment from storage.
+     * Remove a treatment from favorites.
      */
     public function destroy(Request $request)
     {
-        $favorites = Favorites::with(['treatment'])
-            ->where('user_id', $request->user_id)
-            ->where('treatment_id', $request->treatment_id)
-            ->firstOrFail();
-        $favorites->delete();
+        try {
+            $favorite = Favorites::where('user_id', $request->user_id)
+                ->where('treatment_id', $request->treatment_id)
+                ->firstOrFail();
 
-        return response()->json(['message' => 'User treatment deleted successfully!']);
+            $favorite->delete();
+
+            return $this->api()->success([
+                'deleted_treatment_id' => $favorite->treatment_id
+            ], 'Treatment removed from favorites.');
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
+
+    /**
+     * Check if a treatment is already favorited by the user.
+     */
+    public function isFavorited(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'treatment_id' => 'required|exists:treatments,id',
+            ]);
+
+            $exists = Favorites::where('user_id', $validated['user_id'])
+                ->where('treatment_id', $validated['treatment_id'])
+                ->exists();
+
+            return response()->json(['favorited' => $exists]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
     }
 }
