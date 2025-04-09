@@ -21,7 +21,7 @@ class FavoriteResource extends JsonResource
             'treatment_id' => $this->treatment_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'treatment' => TreatmentsResource::collection($this->whenLoaded('treatments')),
+            'treatment' => new TreatmentsResource($this->whenLoaded('treatment')),
         ];
     }
 }
