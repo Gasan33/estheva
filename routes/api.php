@@ -44,6 +44,8 @@ Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic'])->m
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoriesController::class, 'index']);
     Route::get('{id}', [CategoriesController::class, 'show']);
+    Route::get('slug/{slug}', [CategoriesController::class, 'getCategoryBySlug']);
+
     Route::middleware([IsAdmin::class])->group(function () {
         Route::post('/', [CategoriesController::class, 'store']);
         Route::put('{id}', [CategoriesController::class, 'update']);
