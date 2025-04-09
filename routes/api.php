@@ -146,7 +146,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [FavoritesController::class, 'index']);
         Route::post('/', [FavoritesController::class, 'store']);
         Route::delete('/', [FavoritesController::class, 'destroy']);
-        Route::get('/check', [FavoritesController::class, 'isFavorited']);
+        Route::post('/check', [FavoritesController::class, 'isFavorited']);
     });
 
     Route::prefix('messages')->group(function () {
