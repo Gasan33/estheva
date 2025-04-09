@@ -143,7 +143,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::prefix('favorites')->group(function () {
-        Route::get('/', [FavoritesController::class, 'index']);
+        Route::post('/all', [FavoritesController::class, 'index']);
         Route::post('/', [FavoritesController::class, 'store']);
         Route::delete('/', [FavoritesController::class, 'destroy']);
         Route::post('/check', [FavoritesController::class, 'isFavorited']);
