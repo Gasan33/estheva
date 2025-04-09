@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\FavoriteResource;
 use App\Models\Favorites;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class FavoritesController extends Controller
                 ->where('user_id', $request->user_id)
                 ->get();
 
-            return $this->api()->success($favorites);
+            return $this->api()->success(FavoriteResource::collection($favorites));
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
@@ -47,7 +48,7 @@ class FavoritesController extends Controller
 
             $favorite = Favorites::create($validatedData);
 
-            return $this->api()->created($favorite, "Treatment added to favorites.");
+            return $this->api()->created(new FavoriteResource($favorite), "Treatment added to favorites.");
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
@@ -61,7 +62,7 @@ class FavoritesController extends Controller
         try {
             $favorite = Favorites::with(['user', 'treatment'])->findOrFail($id);
 
-            return $this->api()->success($favorite);
+            return $this->api()->success(new FavoriteResource($favorite));
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
@@ -81,7 +82,7 @@ class FavoritesController extends Controller
             $favorite = Favorites::findOrFail($id);
             $favorite->update($validatedData);
 
-            return $this->api()->success($favorite, 'Favorite updated successfully.');
+            return $this->api()->success(new FavoriteResource($favorite), 'Favorite updated successfully.');
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
