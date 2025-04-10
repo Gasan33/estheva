@@ -94,6 +94,7 @@ Route::prefix('offers')->group(function () {
 Route::prefix('blogs')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
     Route::get('{id}', [BlogController::class, 'show']);
+    Route::get('slug/{slug}', [BlogController::class, 'getBlogBySlug']);
     Route::middleware([IsAdmin::class])->group(function () {
         Route::post('/', [BlogController::class, 'store']);
         Route::put('{id}', [BlogController::class, 'update']);

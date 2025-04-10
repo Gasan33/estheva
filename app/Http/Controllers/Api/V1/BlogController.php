@@ -58,6 +58,21 @@ class BlogController extends Controller
         }
     }
 
+    public function getBlogBySlug($slug)
+    {
+        try {
+            $blog = Blog::where('slug', $slug)->first();
+
+            if (!$blog) {
+                return $this->api()->notFound("Blog not found.");
+            }
+
+            return response()->json(new BlogResource($blog));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
+    }
+
     public function update(BlogRequest $request, Blog $blog)
     {
         try {
