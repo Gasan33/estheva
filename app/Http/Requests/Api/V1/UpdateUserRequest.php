@@ -34,6 +34,7 @@ class UpdateUserRequest extends FormRequest
             'gender' => 'nullable|in:male,female',
             'date_of_birth' => 'nullable|date',
             'weight' => 'nullable|numeric',
+            'nationality' => 'nullable|string',
             'device_token' => 'nullable|string',
         ];
     }

@@ -31,6 +31,7 @@ class StoreUserRequest extends FormRequest
             'role' => 'required|in:patient,doctor,admin',
             'gender' => 'required|in:male,female',
             'date_of_birth' => 'nullable|date',
+            'nationality' => 'nullable|string',
             'profile_picture' => 'nullable|string',
             'device_token' => 'nullable|string',
         ];
