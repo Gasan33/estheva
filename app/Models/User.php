@@ -145,4 +145,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(MedicalReports::class, 'patient_id');
     }
+
+    protected static function booted()
+    {
+        static::saving(function ($user) {
+            $user->name = trim("{$user->first_name} {$user->last_name}");
+        });
+    }
+
 }
