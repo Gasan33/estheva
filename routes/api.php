@@ -108,15 +108,15 @@ Route::prefix('blogs')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
-    Route::middleware(['admin', IsAdmin::class])->group(function () {
-        Route::prefix('users')->group(function () {
-            Route::get('/', [UserController::class, 'index']);
-            Route::get('/{id}', [UserController::class, 'show']);
-            Route::post('/', [UserController::class, 'store']);
-            Route::put('/{id}', [UserController::class, 'update']);
-            Route::delete('/{id}', [UserController::class, 'destroy']);
-        });
+    // Route::middleware(['admin', IsAdmin::class])->group(function () {
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->middleware('admin', IsAdmin::class);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::post('/', [UserController::class, 'store'])->middleware('admin', IsAdmin::class);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy'])->middleware('admin', IsAdmin::class);
     });
+    // });
 
     Route::prefix('doctors')->group(function () {
         Route::get('/', [DoctorsController::class, 'index']);
