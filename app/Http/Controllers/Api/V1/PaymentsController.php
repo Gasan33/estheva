@@ -21,12 +21,13 @@ class PaymentsController extends Controller
             $validatedData = $request->validated();
             Stripe::setApiKey(config('services.stripe.secret'));
             $paymentIntent = PaymentIntent::create([
-                'amount' => $validatedData['amount'] * 100,
+                'amount' => $request->amount * 100,
                 'currency' => 'aed',
-                'payment_method' => $validatedData['token'],
-                'confirmation_method' => 'manual',
-                'confirm' => true,
-                'description' => 'Appointment Payment',
+                'payment_method_types' => ['card'],
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
             ]);
 
             $details = $paymentIntent->charges->data[0]->payment_method_details->card ?? null;
