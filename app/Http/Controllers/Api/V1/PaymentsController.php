@@ -12,11 +12,6 @@ use Stripe\Exception\ApiErrorException;
 
 class PaymentsController extends Controller
 {
-    public function __construct()
-    {
-        Stripe::setApiKey(config('services.stripe.secret'));
-    }
-
     /**
      * Handle card payment via Stripe
      */
@@ -24,6 +19,7 @@ class PaymentsController extends Controller
     {
         $validatedData = $request->validated();
 
+        Stripe::setApiKey(env('STRIPE_SECRET'));
         try {
             $paymentIntent = PaymentIntent::create([
                 'amount' => $validatedData['amount'] * 100,
@@ -68,7 +64,7 @@ class PaymentsController extends Controller
             'amount' => 'required|numeric|min:0.1',
             'appointment_id' => 'required|exists:appointments,id',
         ]);
-
+        Stripe::setApiKey(env('STRIPE_SECRET'));
         try {
             $paymentIntent = PaymentIntent::create([
                 'amount' => $validated['amount'] * 100,
