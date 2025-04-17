@@ -35,7 +35,7 @@ class PaymentsController extends Controller
             $payment = Payment::create([
                 'appointment_id' => $validatedData['appointment_id'],
                 'amount' => $validatedData['amount'],
-                'payment_status' => 'completed',
+                'payment_status' => 'paid',
                 'payment_method' => 'stripe',
                 'card_last4' => $details?->last4,
                 'card_brand' => $details?->brand,
