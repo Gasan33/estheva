@@ -65,20 +65,23 @@ class PaymentsController extends Controller
             'appointment_id' => 'required|exists:appointments,id',
         ]);
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
 
         try {
             $paymentIntent = PaymentIntent::create([
                 'amount' => $request->amount * 100,
                 'currency' => 'aed',
-                'payment_method_types' => ['card'],
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never', // Optional if you want to disable redirect-based methods
+                ],
             ]);
 
             Payment::create([
                 'appointment_id' => $request->appointment_id,
                 'amount' => $request->amount,
                 'payment_status' => 'pending',
-                'payment_method' => 'apple_pay',
+                'payment_method' => 'apple_pay', // This might be more general like 'stripe' if method isn’t known yet
             ]);
 
             return response()->json([
@@ -89,6 +92,7 @@ class PaymentsController extends Controller
             return response()->json(['error' => 'Failed to create Apple Pay intent: ' . $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Update status of a payment
