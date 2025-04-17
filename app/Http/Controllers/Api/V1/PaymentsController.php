@@ -17,12 +17,10 @@ class PaymentsController extends Controller
      */
     public function processCardPayment(ProcessCardPaymentRequest $request)
     {
-        $validatedData = $request->validated();
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-        dd(env('STRIPE_SECRET'));
-
         try {
+            $validatedData = $request->validated();
+            Stripe::setApiKey(env('STRIPE_SECRET'));
+            dd(env('STRIPE_SECRET'));
             $paymentIntent = PaymentIntent::create([
                 'amount' => $validatedData['amount'] * 100,
                 'currency' => 'aed',
