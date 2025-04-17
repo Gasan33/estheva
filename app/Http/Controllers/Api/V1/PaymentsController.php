@@ -11,49 +11,53 @@ use Stripe\Exception\ApiErrorException;
 
 class PaymentsController extends Controller
 {
+    public function __construct()
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+    }
+
     /**
      * Handle card payment via Stripe
      */
-    public function processPayment(Request $request)
+    public function processCardPayment(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'amount' => 'required|numeric|min:0.1',
             'appointment_id' => 'required|exists:appointments,id',
             'token' => 'required|string',
         ]);
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $request->amount * 100,
+                'amount' => $validated['amount'] * 100,
                 'currency' => 'aed',
-                'payment_method' => $request->token,
+                'payment_method' => $validated['token'],
                 'confirmation_method' => 'manual',
                 'confirm' => true,
                 'description' => 'Appointment Payment',
             ]);
 
-            $details = $paymentIntent->charges->data[0]->payment_method_details->card ?? null;
+            $cardDetails = $paymentIntent->charges->data[0]->payment_method_details->card ?? null;
 
             $payment = Payment::create([
-                'appointment_id' => $request->appointment_id,
-                'amount' => $request->amount,
+                'appointment_id' => $validated['appointment_id'],
+                'amount' => $validated['amount'],
                 'payment_status' => 'completed',
                 'payment_method' => 'stripe',
-                'card_last4' => $details?->last4,
-                'card_brand' => $details?->brand,
-                'card_exp_month' => $details?->exp_month,
-                'card_exp_year' => $details?->exp_year,
+                'card_last4' => $cardDetails?->last4,
+                'card_brand' => $cardDetails?->brand,
+                'card_exp_month' => $cardDetails?->exp_month,
+                'card_exp_year' => $cardDetails?->exp_year,
             ]);
 
             return response()->json([
-                'message' => 'Payment successful',
+                'message' => 'Payment successful.',
                 'clientSecret' => $paymentIntent->client_secret,
+                'payment_id' => $payment->id,
             ]);
         } catch (ApiErrorException $e) {
             return response()->json(['error' => 'Stripe error: ' . $e->getMessage()], 500);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
         }
     }
@@ -61,34 +65,33 @@ class PaymentsController extends Controller
     /**
      * Create payment intent for Apple Pay
      */
-    public function createApplePayPayment(Request $request)
+    public function createApplePayIntent(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'amount' => 'required|numeric|min:0.1',
             'appointment_id' => 'required|exists:appointments,id',
         ]);
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $request->amount * 100,
+                'amount' => $validated['amount'] * 100,
                 'currency' => 'aed',
-                'payment_method_types' => ['card'],
+                'payment_method_types' => ['card'], // Apple Pay will work under 'card'
             ]);
 
-            Payment::create([
-                'appointment_id' => $request->appointment_id,
-                'amount' => $request->amount,
+            $payment = Payment::create([
+                'appointment_id' => $validated['appointment_id'],
+                'amount' => $validated['amount'],
                 'payment_status' => 'pending',
                 'payment_method' => 'apple_pay',
             ]);
 
             return response()->json([
-                'message' => 'Apple Pay intent created',
+                'message' => 'Apple Pay intent created.',
                 'clientSecret' => $paymentIntent->client_secret,
+                'payment_id' => $payment->id,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => 'Failed to create Apple Pay intent: ' . $e->getMessage()], 500);
         }
     }
@@ -98,18 +101,17 @@ class PaymentsController extends Controller
      */
     public function updatePaymentStatus(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'payment_id' => 'required|exists:payments,id',
             'payment_status' => 'required|in:completed,failed,cancelled',
         ]);
 
         try {
-            $payment = Payment::findOrFail($request->payment_id);
-            $payment->payment_status = $request->payment_status;
-            $payment->save();
+            $payment = Payment::findOrFail($validated['payment_id']);
+            $payment->update(['payment_status' => $validated['payment_status']]);
 
             return response()->json(['message' => 'Payment status updated successfully.']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => 'Failed to update payment status: ' . $e->getMessage()], 500);
         }
     }

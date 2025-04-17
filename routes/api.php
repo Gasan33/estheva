@@ -62,11 +62,7 @@ Route::prefix('faqs')->group(function () {
     });
 });
 
-Route::prefix('payments')->group(function () {
-    Route::post('/process', [PaymentsController::class, 'processPayment']);
-    Route::post('/apple-pay', [PaymentsController::class, 'createApplePayPayment']);
-    Route::post('/update-status', [PaymentsController::class, 'updatePaymentStatus']);
-});
+
 
 Route::prefix('treatments')->group(function () {
     Route::get('/', [TreatmentsController::class, 'index']);
@@ -170,9 +166,11 @@ Route::middleware('auth:api')->group(function () {
     });
 
 
-    Route::post('/payment', [PaymentsController::class, 'processPayment']);
-    Route::post('/apple-pay-payment', [PaymentsController::class, 'createApplePayPayment']);
-
+    Route::prefix('payments')->group(function () {
+        Route::post('/process', [PaymentsController::class, 'processPayment']);
+        Route::post('/apple-pay', [PaymentsController::class, 'createApplePayPayment']);
+        Route::post('/update-status', [PaymentsController::class, 'updatePaymentStatus']);
+    });
 
     Route::get('/agora/token', function (Request $request) {
         $channelName = $request->get('channel_name');
