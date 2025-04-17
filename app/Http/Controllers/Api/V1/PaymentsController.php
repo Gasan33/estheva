@@ -36,7 +36,7 @@ class PaymentsController extends Controller
                 'appointment_id' => $validatedData['appointment_id'],
                 'amount' => $validatedData['amount'],
                 'payment_status' => 'paid',
-                'payment_method' => 'stripe',
+                'payment_method' => 'credit_card',
                 'card_last4' => $details?->last4,
                 'card_brand' => $details?->brand,
                 'card_exp_month' => $details?->exp_month,
