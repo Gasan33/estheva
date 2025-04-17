@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\ProcessCardPaymentRequest;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
@@ -19,19 +20,15 @@ class PaymentsController extends Controller
     /**
      * Handle card payment via Stripe
      */
-    public function processCardPayment(Request $request)
+    public function processCardPayment(ProcessCardPaymentRequest $request)
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.1',
-            'appointment_id' => 'required|exists:appointments,id',
-            'token' => 'required|string',
-        ]);
+        $validatedData = $request->validated();
 
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $validated['amount'] * 100,
+                'amount' => $validatedData['amount'] * 100,
                 'currency' => 'aed',
-                'payment_method' => $validated['token'],
+                'payment_method' => $validatedData['token'],
                 'confirmation_method' => 'manual',
                 'confirm' => true,
                 'description' => 'Appointment Payment',
@@ -40,8 +37,8 @@ class PaymentsController extends Controller
             $cardDetails = $paymentIntent->charges->data[0]->payment_method_details->card ?? null;
 
             $payment = Payment::create([
-                'appointment_id' => $validated['appointment_id'],
-                'amount' => $validated['amount'],
+                'appointment_id' => $validatedData['appointment_id'],
+                'amount' => $validatedData['amount'],
                 'payment_status' => 'completed',
                 'payment_method' => 'stripe',
                 'card_last4' => $cardDetails?->last4,
