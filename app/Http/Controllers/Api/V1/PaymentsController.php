@@ -20,6 +20,7 @@ class PaymentsController extends Controller
         $validatedData = $request->validated();
 
         Stripe::setApiKey(env('STRIPE_SECRET'));
+        dd(env('STRIPE_SECRET'));
 
         try {
             $paymentIntent = PaymentIntent::create([
