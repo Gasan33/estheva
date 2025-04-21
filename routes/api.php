@@ -167,7 +167,8 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::prefix('payments')->group(function () {
-        Route::post('/process', [PaymentsController::class, 'processCardPayment']);
+        Route::post('/card', [PaymentsController::class, 'processCardPayment']);
+        Route::post('/cash', [PaymentsController::class, 'processCashPayment']);
         Route::post('/apple-pay', [PaymentsController::class, 'createApplePayIntent']);
         Route::post('/update-status', [PaymentsController::class, 'updatePaymentStatus']);
     });

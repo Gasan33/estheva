@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ProcessCardPaymentRequest;
+use App\Http\Requests\Api\V1\ProcessCashPaymentRequest;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
@@ -54,6 +55,29 @@ class PaymentsController extends Controller
             return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
         }
     }
+    public function processCashPayment(ProcessCashPaymentRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+
+            $payment = Payment::create([
+                'appointment_id' => $validatedData['appointment_id'],
+                'amount' => $validatedData['amount'],
+                'payment_status' => 'pending',
+                'payment_method' => 'cash',
+            ]);
+
+            return response()->json([
+                'message' => 'Payment successful',
+                'payment_id' => $payment->id,
+            ]);
+        } catch (ApiErrorException $e) {
+            return response()->json(['error' => 'Stripe error: ' . $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
+        }
+    }
+
 
     /**
      * Create payment intent for Apple Pay
