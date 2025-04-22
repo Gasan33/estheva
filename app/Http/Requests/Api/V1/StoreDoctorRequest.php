@@ -39,6 +39,7 @@ class StoreDoctorRequest extends FormRequest
             'exp' => 'nullable|integer',
             'about' => 'nullable|string',
             'home_based' => 'nullable|boolean',
+            'online_consultation' => 'nullable|boolean',
             'availability' => 'required|array',
             'availability.*.day' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
             'availability.*.start_time' => 'required|date_format:H:i',

@@ -16,6 +16,7 @@ class Doctor extends Model
         'exp',
         'about',
         'home_based',
+        'online_consultation'
     ];
 
     public function user()

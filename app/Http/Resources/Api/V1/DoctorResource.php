@@ -25,6 +25,7 @@ class DoctorResource extends JsonResource
             'about' => $this->about,
             'home_based' => $this->home_based,
             'availabilities' => $this->availabilities,
+            'online_consultation' => $this->online_consultation,
             'user' => $this->user,
             'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
 

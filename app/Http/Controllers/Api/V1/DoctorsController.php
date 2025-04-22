@@ -53,6 +53,7 @@ class DoctorsController extends Controller
                 'exp' => $request->exp,
                 'about' => $request->about,
                 'home_based' => $request->home_based,
+                'online_consultation' => $request->online_consultation,
             ]);
 
             // Handle Availability
@@ -108,7 +109,8 @@ class DoctorsController extends Controller
                 'patients',
                 'exp',
                 'about',
-                'home_based'
+                'home_based',
+                'online_consultation'
             ]));
 
             // Update availability

@@ -64,7 +64,7 @@ class User extends Authenticatable
     {
         // return Attribute::get(function () {
         return $this->profile_picture
-            ? asset("https://api.estheva-clinic.com/storage/{$this->profile_picture}")
+            ? asset("storage/{$this->profile_picture}")
             : asset('user-avatar.png'); // Path to your default avatar
         // });
     }
