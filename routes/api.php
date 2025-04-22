@@ -40,6 +40,7 @@ Route::post('/change-password', [AuthController::class, 'changePassword'])->midd
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 Route::get('user', [UserController::class, 'user'])->middleware('auth:api');
 Route::post('/uploadProfilePic', [UserController::class, 'uploadProfilePic'])->middleware('auth:api');
+Route::get('/doctors/online', [DoctorsController::class, 'getOnlineConsultaionDoctors']);
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoriesController::class, 'index']);
@@ -117,7 +118,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('doctors')->group(function () {
         Route::get('/', [DoctorsController::class, 'index']);
         Route::get('/{id}', [DoctorsController::class, 'show']);
-        Route::get('/online', [DoctorsController::class, 'getOnlineConsultaionDoctors']);
+
         Route::middleware(['admin', IsAdmin::class])->group(function () {
             Route::post('/', [DoctorsController::class, 'store']);
             Route::put('/{id}', [DoctorsController::class, 'update']);
