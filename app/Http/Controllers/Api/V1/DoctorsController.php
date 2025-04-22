@@ -131,6 +131,24 @@ class DoctorsController extends Controller
             return $this->api()->error($exception->getMessage());
         }
     }
+
+
+    public function getOnlineConsultaionDoctors()
+    {
+        try {
+            $doctors = Doctor::with(['user', 'availabilities', 'addresses', 'medicalReports', 'appointments', 'reviews'])->where('online_consultation', 1)->first();
+
+            if (!$doctors) {
+                return $this->api()->notFound("No Online Consultaion doctors found.");
+            }
+
+            return $this->api()->success(DoctorResource::collection($doctors));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
+    }
+
+
     // {
     //     $validated = $request->validate([
     //         'first_name' => 'sometimes|required|string|max:255',

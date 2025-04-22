@@ -117,6 +117,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('doctors')->group(function () {
         Route::get('/', [DoctorsController::class, 'index']);
         Route::get('/{id}', [DoctorsController::class, 'show']);
+        Route::get('/online', [DoctorsController::class, 'getOnlineConsultaionDoctors']);
         Route::middleware(['admin', IsAdmin::class])->group(function () {
             Route::post('/', [DoctorsController::class, 'store']);
             Route::put('/{id}', [DoctorsController::class, 'update']);
