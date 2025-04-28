@@ -14,7 +14,7 @@ class BlogController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = 10; // Or set this to a dynamic value
+            $perPage = 10;
             $blogs = Blog::latest()->paginate($perPage);
 
             return $this->api()->success([
@@ -24,6 +24,17 @@ class BlogController extends Controller
                     'next_page_url' => $blogs->nextPageUrl(),
                 ]
             ]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
+
+    public function all(Request $request)
+    {
+        try {
+            $blogs = Blog::all();
+
+            return $this->api()->success(BlogResource::collection($blogs));
         } catch (Exception $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }

@@ -90,6 +90,7 @@ Route::prefix('offers')->group(function () {
 
 Route::prefix('blogs')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
+    Route::get('/all', [BlogController::class, 'all']);
     Route::get('{id}', [BlogController::class, 'show']);
     Route::get('slug/{slug}', [BlogController::class, 'getBlogBySlug']);
     Route::middleware([IsAdmin::class])->group(function () {
