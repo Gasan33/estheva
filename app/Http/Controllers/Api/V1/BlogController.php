@@ -84,9 +84,10 @@ class BlogController extends Controller
         }
     }
 
-    public function update(BlogRequest $request, Blog $blog)
+    public function update(BlogRequest $request, $id)
     {
         try {
+            $blog = Blog::findOrFail($id);
             $blog->update([
                 'title' => $request->title,
                 'content' => $request->content,
