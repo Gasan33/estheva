@@ -74,6 +74,21 @@ class FaqController extends Controller
         }
     }
 
+    public function getFaqBySlug($slug)
+    {
+        try {
+            $faq = Faq::where('slug', $slug)->first();
+
+            if (!$faq) {
+                return $this->api()->notFound("Faq not found.");
+            }
+
+            return response()->json(new FaqResource($faq));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
+    }
+
 
     public function destroy($id)
     {
