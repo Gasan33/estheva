@@ -55,6 +55,7 @@ Route::prefix('categories')->group(function () {
 });
 Route::prefix('faqs')->group(function () {
     Route::get('/', [FaqController::class, 'index']);
+    Route::get('/all', [FaqController::class, 'all']);
     Route::get('{id}', [FaqController::class, 'show']);
     Route::get('slug/{slug}', [FaqController::class, 'getFaqBySlug']);
     Route::middleware([IsAdmin::class])->group(function () {

@@ -13,6 +13,18 @@ use Illuminate\Support\Str;
 
 class FaqController extends Controller
 {
+
+    public function all(Request $request)
+    {
+        try {
+            $faq = Faq::all();
+
+            return $this->api()->success(FaqResource::collection($faq));
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
+
     public function index()
     {
         try {
