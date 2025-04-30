@@ -115,7 +115,7 @@ class DoctorsController extends Controller
 
             // Update availability
             if ($request->has('availability')) {
-                $doctor->availability()->delete(); // Delete existing availability
+                $doctor->availabilities()->delete(); // Delete existing availability
                 foreach ($request->availability as $entry) {
                     Availability::create([
                         'doctor_id' => $doctor->id,
