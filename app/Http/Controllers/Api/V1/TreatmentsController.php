@@ -102,6 +102,32 @@ class TreatmentsController extends Controller
         }
     }
 
+    public function addDiscount(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'discount_value' => 'required|numeric|min:0',
+                'discount_type' => 'required|in:percentage,fixed',
+            ]);
+
+            $treatment = Treatment::findOrFail($id);
+
+            $treatment->discount_value = $validated['discount_value'];
+            $treatment->discount_type = $validated['discount_type'];
+            $treatment->save();
+
+            return response()->json([
+                'original_price' => $treatment->price,
+                'discount_type' => $treatment->discount_type,
+                'discount_value' => $treatment->discount_value,
+                'discounted_price' => $treatment->getDiscountedPrice(),
+            ]);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+    }
+
+
     public function getDiscountedPrice($id)
     {
         try {
