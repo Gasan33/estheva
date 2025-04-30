@@ -76,7 +76,7 @@ Route::prefix('treatments')->group(function () {
     Route::get('{id}', [TreatmentsController::class, 'show']);
     Route::middleware([IsAdmin::class])->group(function () {
         Route::post('/', [TreatmentsController::class, 'store']);
-        Route::post('{id}/addDiscount', [TreatmentsController::class, 'addDiscount']);
+        Route::put('{id}/addDiscount', [TreatmentsController::class, 'addDiscount']);
         Route::put('{id}', [TreatmentsController::class, 'update']);
         Route::delete('{id}', [TreatmentsController::class, 'destroy']);
     });
