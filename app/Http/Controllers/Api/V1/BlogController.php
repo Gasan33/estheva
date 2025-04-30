@@ -102,9 +102,10 @@ class BlogController extends Controller
         }
     }
 
-    public function destroy(Blog $blog)
+    public function destroy($id)
     {
         try {
+            $blog = Blog::findOrFail($id);
             $blog->delete();
             return $this->api()->success([], 'Blog deleted successfully');
         } catch (Exception $exception) {
