@@ -15,6 +15,7 @@ class TreatmentsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'short_description' => $this->short_description,
             'description' => $this->description,
             'price' => $this->price,
             'discounted_price' => $this->getDiscountedPrice(),

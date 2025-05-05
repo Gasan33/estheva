@@ -24,6 +24,7 @@ class TreatmentRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'short_description' => 'nullable|string',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'images' => 'nullable|array',

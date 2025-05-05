@@ -12,6 +12,7 @@ class Treatment extends Model
 {
     protected $fillable = [
         'title',
+        'short_description',
         'description',
         'price',
         'images',
