@@ -22,11 +22,10 @@ class AuthController extends Controller
                 $user = Auth::user();
                 if ($user) {
                     $accessToken = $request->user()->createToken('authToken')->accessToken;
-                    return response([
-                        "message" => "Successfully Login",
+                    return $this->api()->success([
                         "user" => $user,
                         "access_token" => $accessToken
-                    ], 200);
+                    ]);
                 }
             }
 
@@ -78,7 +77,7 @@ class AuthController extends Controller
 
             $accessToken = $user->createToken('authToken')->accessToken;
 
-            return response(['user' => $user, 'access_token' => $accessToken], 201);
+            return $this->api()->created(['user' => $user, 'access_token' => $accessToken]);
         } catch (Exception $exception) {
             return response(
                 ["message" => $exception->getMessage()],
